@@ -7,6 +7,6 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/paginate.css" type="text/css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resource/jquery/css/smoothness/jquery-ui.min.css" type="text/css">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css">
-
+<link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/main.css" />
 <script type="text/javascript" src="${pageContext.request.contextPath}/assets/jquery/js/jquery.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/assets/js/util-jquery.js"></script>
