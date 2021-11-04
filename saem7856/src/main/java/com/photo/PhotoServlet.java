@@ -332,5 +332,4 @@ public class PhotoServlet extends MyUploadServlet {
 		}
 		resp.sendRedirect(cp + "/photo/list.do?page="+page);
 	}
-
 }

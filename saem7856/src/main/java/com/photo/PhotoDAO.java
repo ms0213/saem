@@ -436,8 +436,7 @@ public class PhotoDAO {
 				} catch (SQLException e2) {
 				}
 			}
-		}
-		
+		}	
 		return dto;
 	}
 	

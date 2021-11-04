@@ -108,7 +108,6 @@ function sendOk() {
 						<input type="text" name="subject" maxlength="100" class="boxTF" value="${dto.subject}">
 					</td>
 				</tr>
-				
 				<tr> 
 					<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용</td>
 					<td> 

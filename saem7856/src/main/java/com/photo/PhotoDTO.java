@@ -59,6 +59,4 @@ public class PhotoDTO {
 	public void setImageFiles(String[] imageFiles) {
 		this.imageFiles = imageFiles;
 	}
-	
-	
 }

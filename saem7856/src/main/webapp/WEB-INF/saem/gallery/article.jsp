@@ -145,7 +145,6 @@ function imageViewer(img) {
 								</td>
 							</tr>
 						</table>
-
 						<table class="table">
 							<tr>
 								<td width="50%">
