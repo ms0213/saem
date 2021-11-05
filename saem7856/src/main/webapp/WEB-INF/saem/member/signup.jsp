@@ -278,7 +278,7 @@ function changeEmail() {
 							</table>
 							
 							<table class="table">
-								<c:if test="${mode=='member'}">
+								<c:if test="${mode=='signup'}">
 									<tr>
 										<td align="center">
 											<span>
@@ -292,10 +292,10 @@ function changeEmail() {
 										
 								<tr>
 									<td align="center">
-									    <button type="button" class="btn" name="btnOk" onclick="memberOk();"> ${mode=="member"?"회원가입":"정보수정"} </button>
+									    <button type="button" class="btn" name="btnOk" onclick="memberOk();"> ${mode=="signup"?"회원가입":"정보수정"} </button>
 									    <button type="reset" class="btn"> 다시입력 </button>
 									    <button type="button" class="btn" 
-									    	onclick="javascript:location.href='${pageContext.request.contextPath}/';"> ${mode=="member"?"가입취소":"수정취소"} </button>
+									    	onclick="javascript:location.href='${pageContext.request.contextPath}/';"> ${mode=="signup"?"가입취소":"수정취소"} </button>
 									</td>
 								</tr>
 								

@@ -105,7 +105,7 @@ public class MemberServlet extends MyServlet {
 	private void memberForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// 회원가입 폼
 		req.setAttribute("title", "회원 가입");
-		req.setAttribute("mode", "member");
+		req.setAttribute("mode", "signup");
 
 		forward(req, resp, "/WEB-INF/saem/member/signup.jsp");
 	}
