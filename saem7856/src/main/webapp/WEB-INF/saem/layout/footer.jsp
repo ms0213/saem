@@ -33,7 +33,7 @@
 					<ul>
 						<li><a href="#">일정</a></li>
 						<li><a href="#">기사</a></li>
-						<li><a href="#">photo</a></li>
+						<li><a href="${pageContext.request.contextPath}/photo/list.do">photo</a></li>
 					</ul></li>
 				<li><span class="opener">Community</span>
 					<ul>

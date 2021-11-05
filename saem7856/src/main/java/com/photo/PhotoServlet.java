@@ -314,10 +314,10 @@ public class PhotoServlet extends MyUploadServlet {
 				resp.sendRedirect(cp + "/photo/list.do?page="+page);
 				return;
 			}
-			if(!info.getUserId().equals("admin")) {
+			/* if(!info.getUserId().equals("admin")) {
 				resp.sendRedirect(cp + "/photo/list.do?page="+page);
 				return;
-			}
+			} */
 			
 			List<PhotoDTO> listFile = dao.listPhotoFile(num);
 			for(PhotoDTO vo : listFile) {

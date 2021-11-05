@@ -46,15 +46,7 @@
 					<table >
 						<tr>
 							<td width="50%">
-								<c:if test="${sessionScope.member.userId=='admin'}">
-									<button type="button" class="btn" id="btnDeleteList">삭제</button>
-								</c:if>
-								<c:if test="${sessionScope.member.userId!='admin'}">
-									${dataCount}개(${page}/${total_page} 페이지)
-								</c:if>
-							</td>
-							<td align="right">
-								<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/photo/write.do';">사진올리기</button>
+								${dataCount}개(${page}/${total_page} 페이지)
 							</td>
 							<td width="20%" align="right">
 								<!-- Search -->
@@ -77,6 +69,7 @@
 						<div class="item" title="${dto.subject}"
 							onclick="location.href='${articleUrl}&num=${dto.num}';">
 							<img src="${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}">
+							<p style="text-align: center;">${dto.subject}</p>
 						</div>
 					</c:forEach>
 				</div>

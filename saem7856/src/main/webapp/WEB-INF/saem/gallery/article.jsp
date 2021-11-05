@@ -36,12 +36,12 @@
 }
 
 .img-box {
-	max-width: 700px;
+	max-width: 1140px;
 	padding: 5px;
 	box-sizing: border-box;
 	border: 1px solid #ccc;
-	display: flex; /* 자손요소를 flexbox로 변경 */
-	flex-direction: row; /* 정방향 수평나열 */
+	display: flex;
+	flex-direction: row;
 	flex-wrap: nowrap;
 	overflow-x: auto;
 }
@@ -60,16 +60,14 @@
 }
 </style>
 <script type="text/javascript">
-<c:if test="${sessionScope.member.userId == 'admin'}">
-	function deletePhoto() {
-		if (confirm("게시글을 삭제 하시 겠습니까 ? ")) {
-			var query = "num=${dto.num}&page=${page}";
-			var url = "${pageContext.request.contextPath}/photo/delete.do?"
-					+ query;
-			location.href = url;
-		}
+function deletePhoto() {
+	if (confirm("게시글을 삭제 하시 겠습니까 ? ")) {
+		var query = "num=${dto.num}&page=${page}";
+		var url = "${pageContext.request.contextPath}/photo/delete.do?"
+				+ query;
+		location.href = url;
 	}
-</c:if>
+}
 
 function imageViewer(img) {
 	var viewer = $(".photo-layout");
@@ -77,7 +75,7 @@ function imageViewer(img) {
 	viewer.html(s);
 
 	$(".dialog-photo").dialog({
-		title : "이미지",
+		title : "image",
 		width : 600,
 		height : 530,
 		modal : true
@@ -85,6 +83,7 @@ function imageViewer(img) {
 }
 </script>
 </head>
+
 <body class="is-preload">
 	<!--  Wrapper -->
 	<div id="wrapper">
@@ -99,7 +98,7 @@ function imageViewer(img) {
 				<!-- Section -->
 				<div class="title" style="margin: 30px 0 30px 0">
 					<h1>포토갤러리</h1>
-					<div class="body-container" style="width: 700px;">
+					<div class="title" style="margin: 30px 0 30px 0">
 						<div class="body-title">
 							<h3>
 								<i class="far fa-image"></i> 포토 앨범
@@ -114,12 +113,9 @@ function imageViewer(img) {
 							<tr>
 								<td align="right">${dto.reg_date}</td>
 							</tr>
-
+							
 							<tr>
-								<td colspan="2">${dto.content}</td>
-							</tr>
-							<tr>
-								<td colspan="2" height="110">
+								<td colspan="2" height="110" style="background-color: white;">
 									<div class="img-box">
 										<c:forEach var="vo" items="${listFile}">
 											<img
@@ -127,18 +123,19 @@ function imageViewer(img) {
 												onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${vo.imageFilename}');">
 										</c:forEach>
 									</div>
+									<p  style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
+									<p>${dto.content}</p>
 								</td>
 							</tr>
-
 							<tr>
-								<td colspan="2">다음글 : <c:if test="${not empty preReadDto}">
+								<td colspan="2" style="background-color: white;">다음글 : <c:if test="${not empty preReadDto}">
 										<a
 											href="${pageContext.request.contextPath}/photo/article.do?num=${preReadDto.num}&page=${page}">${preReadDto.subject}</a>
 									</c:if>
 								</td>
 							</tr>
 							<tr>
-								<td colspan="2">이전글 : <c:if test="${not empty nextReadDto}">
+								<td colspan="2" style="background-color: white;">이전글 : <c:if test="${not empty nextReadDto}">
 										<a
 											href="${pageContext.request.contextPath}/photo/article.do?num=${nextReadDto.num}&page=${page}">${nextReadDto.subject}</a>
 									</c:if>
