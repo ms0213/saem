@@ -93,7 +93,9 @@ function imageViewer(img) {
 			<div class="inner">
 
 				<!-- Header -->
-				<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
+				<header id="header">
+					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
+				</header>
 
 				<!-- Section -->
 				<div class="title" style="margin: 30px 0 30px 0">

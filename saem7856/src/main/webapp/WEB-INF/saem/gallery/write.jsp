@@ -100,11 +100,11 @@
 </head>
 <body>
 
-	<header>
+	<header id="header">
 		<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 	</header>
 
-	<div class="inner">
+	<div class="inner" style="margin: 30px 0 30px 0">
 		<div class="body-title">
 			<h3>
 				<i class="far fa-image"></i> 포토 앨범
