@@ -32,11 +32,11 @@ public class PhotoServlet extends MyUploadServlet {
 		
 		HttpSession session = req.getSession();
 		SessionInfo info = (SessionInfo) session.getAttribute("member");
-		/*
+		
 		if(info == null) {
 			resp.sendRedirect(cp + "/member/login.do");
 			return;
-		}*/
+		}
 		// 이미지 저장 경로(pathname)
 		String root = session.getServletContext().getRealPath("/");
 		pathname = root + "uploads" + File.separator + "photo";
@@ -112,6 +112,17 @@ public class PhotoServlet extends MyUploadServlet {
 	
 	private void writeForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// 글쓰기 폼
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+		
+		String cp = req.getContextPath();
+		
+		String page = req.getParameter("page");
+		
+		if(!info.getUserId().equals("admin")) {
+			resp.sendRedirect(cp + "/photo/list.do");
+			return;
+		}
 		req.setAttribute("mode", "write");
 		forward(req, resp, "/WEB-INF/saem/gallery/write.jsp");
 	}
@@ -157,6 +168,11 @@ public class PhotoServlet extends MyUploadServlet {
 		String cp = req.getContextPath();
 		String page = req.getParameter("page");
 		
+		if(info == null) {
+			resp.sendRedirect(cp + "/member/login.do");
+			return;
+		}
+		
 		try {
 			int num = Integer.parseInt(req.getParameter("num"));
 			
@@ -200,7 +216,7 @@ public class PhotoServlet extends MyUploadServlet {
 		try {
 			int num = Integer.parseInt(req.getParameter("num"));
 			PhotoDTO dto = dao.readPhoto(num);
-			/*
+			
 			if(dto == null) {
 				resp.sendRedirect(cp + "/photo/list.do?page="+page);
 				return;
@@ -209,7 +225,7 @@ public class PhotoServlet extends MyUploadServlet {
 			if(!info.getUserId().equals("admin")) {
 				resp.sendRedirect(cp + "/photo/list.do?page="+page);
 				return;
-			}*/
+			}
 			List<PhotoDTO> listFile = dao.listPhotoFile(num);
 			
 			req.setAttribute("dto", dto);
@@ -314,10 +330,10 @@ public class PhotoServlet extends MyUploadServlet {
 				resp.sendRedirect(cp + "/photo/list.do?page="+page);
 				return;
 			}
-			/* if(!info.getUserId().equals("admin")) {
+			if(!info.getUserId().equals("admin")) {
 				resp.sendRedirect(cp + "/photo/list.do?page="+page);
 				return;
-			} */
+			}
 			
 			List<PhotoDTO> listFile = dao.listPhotoFile(num);
 			for(PhotoDTO vo : listFile) {
