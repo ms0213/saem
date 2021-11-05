@@ -12,82 +12,98 @@
 
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
 <style type="text/css">
-.table-list tr:first-child{
+.table-list tr:first-child {
 	background: #eee;
 }
+
 .table-list th, .table-list td {
 	text-align: center;
 }
 
 .table-list .notice {
-	display: inline-block; padding:1px 3px; background: #ed4c00; color: #fff;
+	display: inline-block;
+	padding: 1px 3px;
+	background: #ed4c00;
+	color: #fff;
 }
+
 .table-list .left {
-	text-align: left; padding-left: 5px; 
+	text-align: left;
+	padding-left: 5px;
 }
 
 .table-list .chk {
-	width: 40px; color: #787878;
+	width: 40px;
+	color: #787878;
 }
+
 .table-list .num {
-	width: 60px; color: #787878;
+	width: 60px;
+	color: #787878;
 }
+
 .table-list .subject {
 	color: #787878;
 }
+
 .table-list .name {
-	width: 100px; color: #787878;
-}
-.table-list .date {
-	width: 100px; color: #787878;
-}
-.table-list .hit {
-	width: 70px; color: #787878;
+	width: 100px;
+	color: #787878;
 }
 
-.table-list input[type=checkbox]{
+.table-list .date {
+	width: 100px;
+	color: #787878;
+}
+
+.table-list .hit {
+	width: 70px;
+	color: #787878;
+}
+
+.table-list input[type=checkbox] {
 	vertical-align: middle;
 }
 </style>
 
 <script type="text/javascript">
+	function changeList() {
+		var f = document.listForm;
+		f.page.value = "1";
+		f.action = "${pageContext.request.contextPath}/announce/list.do";
+		f.submit();
+	}
 
-function changeList() {
-    var f=document.listForm;
-    f.page.value="1";
-    f.action="${pageContext.request.contextPath}/announce/list.do";
-    f.submit();
-} 
+	function searchList() {
+		var f = document.searchForm;
+		f.submit();
+	}
 
-function searchList() {
-	var f = document.searchForm;
-	f.submit();
-}
+	$(function() {
+		$("#chkAll").click(function() {
+			if ($(this).is(":checked")) {
+				$("input[name=nums]").prop("checked", true);
+			} else {
+				$("input[name=nums]").prop("checked", false);
+			}
+		});
 
+		$("#btnDeleteList")
+				.click(
+						function() {
+							var cnt = $("input[name=nums]:checked").length;
+							if (cnt == 0) {
+								alert("삭제할 게시물을 먼저 선택하세요.");
+								return false;
+							}
 
-$(function(){
-	$("#chkAll").click(function(){
-		if($(this).is(":checked")) {
-			$("input[name=nums]").prop("checked", true);
-		} else {
-			$("input[name=nums]").prop("checked", false);
-		}
+							if (confirm("선택한 게시물을 삭제 하시겠습니까 ?")) {
+								var f = document.listForm;
+								f.action = "${pageContext.request.contextPath}/announce/deleteList.do";
+								f.submit();
+							}
+						});
 	});
-		
-	$("#btnDeleteList").click(function(){
-		var cnt=$("input[name=nums]:checked").length;
-		if(cnt==0) {
-			alert("삭제할 게시물을 먼저 선택하세요.");
-			return false;
-		}
-			
-		if(confirm("선택한 게시물을 삭제 하시겠습니까 ?")) {
-			var f = document.listForm;
-			f.action="${pageContext.request.contextPath}/announce/deleteList.do";
-			f.submit();
-		}
-	});
-});
 </script>
 
 </head>
@@ -151,17 +167,17 @@ $(function(){
 								<th class="date">작성일</th>
 								<th class="hit">조회수</th>
 							</tr>
-							
+
 							<c:forEach var="dto" items="${listNotice}">
 								<tr>
 									<c:if test="${sessionScope.member.userId=='admin'}">
-										<td><input type="checkbox" name="nums" value="${dto.num}">
-										</td>
+										<td><input type="checkbox" name="nums"
+											value="${dto.anum}"></td>
 									</c:if>
 									<td><span class="notice">공지</span></td>
-									<td class="left"><a href="${articleUrl}&num=${dto.num}">${dto.subject}</a>
+									<td class="left"><a href="${articleUrl}&num=${dto.anum}">${dto.subject}</a>
 									</td>
-									<td>${dto.userName}</td>
+									<td><span>관리자</span></td>
 									<td>${dto.reg_date}</td>
 									<td>${dto.hitCount}</td>
 								</tr>
@@ -169,17 +185,11 @@ $(function(){
 
 							<c:forEach var="dto" items="${list}">
 								<tr>
-									<c:if test="${sessionScope.member.userId=='admin'}">
-										<td><input type="checkbox" name="nums" value="${dto.num}">
-										</td>
-									</c:if>
+									<td><input type="checkbox" name="nums" value="${dto.anum}">
+									</td>
 									<td>${dto.listNum}</td>
-									<td class="left"><a href="${articleUrl}&num=${dto.num}">${dto.subject}</a>
-										<c:if test="${dto.gap<1}">
-											<img
-												src="${pageContext.request.contextPath}/resource/images/new.gif">
-										</c:if></td>
-									<td>${dto.userName}</td>
+									<td class="left"><a href="${articleUrl}&num=${dto.anum}">${dto.subject}</a>
+									<td><span>관리자</span></td>
 									<td>${dto.reg_date}</td>
 									<td>${dto.hitCount}</td>
 								</tr>
@@ -203,8 +213,6 @@ $(function(){
 									<select name="condition" class="selectField">
 										<option value="all"
 											${condition=="all"?"selected='selected'":"" }>제목+내용</option>
-										<option value="userName"
-											${condition=="userName"?"selected='selected'":"" }>작성자</option>
 										<option value="reg_date"
 											${condition=="reg_date"?"selected='selected'":"" }>등록일</option>
 										<option value="subject"
@@ -217,6 +225,11 @@ $(function(){
 									<button type="button" class="btn" onclick="searchList();">검색</button>
 								</form>
 							</td>
+							<td align="right" width="100"><c:if
+									test="${sessionScope.member.userId == 'admin'}">
+									<button type="button" class="btn"
+										onclick="location.href='${pageContext.request.contextPath}/announce/write.do?rows=${rows}';">글올리기</button>
+								</c:if></td>
 						</tr>
 					</table>
 

@@ -2,11 +2,25 @@ package com.announce;
 
 public class AnnounceDTO {
 	private int anum;
+	private int listNum;
 	private String subject;
 	private String content;
 	private String reg_date;
 	private int hitCount;
+	private int announce;
 	
+	public int getListNum() {
+		return listNum;
+	}
+	public void setListNum(int listNum) {
+		this.listNum = listNum;
+	}
+	public int getAnnounce() {
+		return announce;
+	}
+	public void setAnnounce(int announce) {
+		this.announce = announce;
+	}
 	public int getAnum() {
 		return anum;
 	}
