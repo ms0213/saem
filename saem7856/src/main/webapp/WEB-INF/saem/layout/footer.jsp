@@ -18,7 +18,7 @@
 				<h2>Menu</h2>
 			</header>
 			<ul>
-				<li><a href="index.html">Homepage</a></li>
+				<li><a href="${pageContext.request.contextPath}/">Homepage</a></li>
 				<li><a href="./aboutUs.html">About us</a></li>
 				<li><span class="opener">League</span>
 					<ul>
@@ -31,53 +31,31 @@
 					</ul></li>
 				<li><span class="opener">News</span>
 					<ul>
-						<li><a href="#">일정</a></li>
-						<li><a href="#">기사</a></li>
+						<li><a href="${pageContext.request.contextPath}/fixture/list.do">일정</a></li>
+						<li><a href="${pageContext.request.contextPath}/article/list.do">기사</a></li>
 						<li><a href="${pageContext.request.contextPath}/photo/list.do">photo</a></li>
 					</ul></li>
 				<li><span class="opener">Community</span>
 					<ul>
-						<li><a href="#">자유게시판</a></li>
-						<li><a href="#">중고거래</a></li>
-						<li><a href="#">굿즈</a></li>
+						<li><a href="${pageContext.request.contextPath}/bbs/list.do">자유게시판</a></li>
+						<li><a href="${pageContext.request.contextPath}/trade/list.do">중고거래</a></li>
+						<li><a href="${pageContext.request.contextPath}/goods/list.do">굿즈</a></li>
 					</ul></li>
 				<li><span class="opener">Contact</span>
 					<ul>
 						<li><a href="${pageContext.request.contextPath}/announce/list.do">공지사항</a></li>
 						<li><a href="#">contact us</a></li>
 					</ul></li>
+				<c:if test="${sessionScope.member.userId=='admin'}">	
 				<li><span class="opener">Admin</span>
 					<ul>
-						<li><a href="#">Lorem Dolor</a></li>
-						<li><a href="#">Ipsum Adipiscing</a></li>
-						<li><a href="#">Tempus Magna</a></li>
-						<li><a href="#">Feugiat Veroeros</a></li>
+						<li><a href="${pageContext.request.contextPath}/announce/write.do">공지사항 등록</a></li>
+						<li><a href="${pageContext.request.contextPath}/goods/write.do">굿즈 등록</a></li>
+						<li><a href="${pageContext.request.contextPath}/photo/write.do">사진 등록</a></li>
+						<li><a href="${pageContext.request.contextPath}/article/write.do">기사 등록</a></li>
+						<li><a href="${pageContext.request.contextPath}/player/write.do">선수 등록</a></li>
 					</ul></li>
+				</c:if>	
 			</ul>
 		</nav>
-
-
-		<!-- Section -->
-		<section>
-			<header class="major">
-				<h2>Get in touch</h2>
-			</header>
-			<ul class="contact">
-				<li class="icon solid fa-envelope"><a href="#">information@untitled.tld</a></li>
-				<li class="icon solid fa-phone">(000) 000-0000</li>
-				<li class="icon solid fa-home">1234 Somewhere Road #8254<br />
-					Nashville, TN 00000-0000
-				</li>
-			</ul>
-		</section>
-
-		<!-- Footer -->
-		<footer id="footer">
-			<p class="copyright">
-				&copy; Untitled. All rights reserved. Demo Images: <a
-					href="https://unsplash.com">Unsplash</a>. Design: <a
-					href="https://html5up.net">HTML5 UP</a>.
-			</p>
-		</footer>
-
 	</div>

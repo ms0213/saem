@@ -32,12 +32,12 @@ public class AnnounceServlet extends MyUploadServlet {
 		HttpSession session = req.getSession();
 		SessionInfo info = (SessionInfo) session.getAttribute("member");
 		
-		/*
+		
 		if(uri.indexOf("list.do") == -1 && info == null) {
 			resp.sendRedirect(cp + "/member/login.do");
 			return;
 		}
-		*/
+		
 		
 		if(uri.indexOf("list.do") != -1) {
 			list(req, resp);
