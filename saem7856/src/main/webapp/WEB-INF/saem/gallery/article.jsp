@@ -60,27 +60,27 @@
 }
 </style>
 <script type="text/javascript">
-function deletePhoto() {
-	if (confirm("게시글을 삭제 하시 겠습니까 ? ")) {
-		var query = "num=${dto.num}&page=${page}";
-		var url = "${pageContext.request.contextPath}/photo/delete.do?"
-				+ query;
-		location.href = url;
+	function deletePhoto() {
+		if (confirm("게시글을 삭제 하시 겠습니까 ? ")) {
+			var query = "num=${dto.num}&page=${page}";
+			var url = "${pageContext.request.contextPath}/photo/delete.do?"
+					+ query;
+			location.href = url;
+		}
 	}
-}
 
-function imageViewer(img) {
-	var viewer = $(".photo-layout");
-	var s = "<img src='"+img+"'>";
-	viewer.html(s);
+	function imageViewer(img) {
+		var viewer = $(".photo-layout");
+		var s = "<img src='"+img+"'>";
+		viewer.html(s);
 
-	$(".dialog-photo").dialog({
-		title : "image",
-		width : 600,
-		height : 530,
-		modal : true
-	});
-}
+		$(".dialog-photo").dialog({
+			title : "image",
+			width : 600,
+			height : 530,
+			modal : true
+		});
+	}
 </script>
 </head>
 
@@ -115,7 +115,7 @@ function imageViewer(img) {
 							<tr>
 								<td align="right">${dto.reg_date}</td>
 							</tr>
-							
+
 							<tr>
 								<td colspan="2" height="110" style="background-color: white;">
 									<div class="img-box">
@@ -125,19 +125,21 @@ function imageViewer(img) {
 												onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${vo.imageFilename}');">
 										</c:forEach>
 									</div>
-									<p  style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
+									<p style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
 									<p>${dto.content}</p>
 								</td>
 							</tr>
 							<tr>
-								<td colspan="2" style="background-color: white;">다음글 : <c:if test="${not empty preReadDto}">
+								<td colspan="2" style="background-color: white;">다음글 : <c:if
+										test="${not empty preReadDto}">
 										<a
 											href="${pageContext.request.contextPath}/photo/article.do?num=${preReadDto.num}&page=${page}">${preReadDto.subject}</a>
 									</c:if>
 								</td>
 							</tr>
 							<tr>
-								<td colspan="2" style="background-color: white;">이전글 : <c:if test="${not empty nextReadDto}">
+								<td colspan="2" style="background-color: white;">이전글 : <c:if
+										test="${not empty nextReadDto}">
 										<a
 											href="${pageContext.request.contextPath}/photo/article.do?num=${nextReadDto.num}&page=${page}">${nextReadDto.subject}</a>
 									</c:if>
@@ -146,11 +148,22 @@ function imageViewer(img) {
 						</table>
 						<table class="table">
 							<tr>
-								<td width="50%">
-									<button type="button" class="btn"
-										onclick="location.href='${pageContext.request.contextPath}/photo/update.do?num=${dto.num}&page=${page}';">수정</button>
-									<button type="button" class="btn" onclick="deletePhoto();">삭제</button>
-								</td>
+								<td width="50%"><c:choose>
+										<c:when test="${sessionScope.member.userId=='admin'}">
+											<button type="button" class="btn"
+												onclick="location.href='${pageContext.request.contextPath}/photo/update.do?num=${dto.num}&page=${page}';">수정</button>
+										</c:when>
+										<c:otherwise>
+											<button type="button" class="btn" disabled="disabled">수정</button>
+										</c:otherwise>
+									</c:choose> <c:choose>
+										<c:when test="${sessionScope.member.userId=='admin'}">
+											<button type="button" class="btn" onclick="deletePhoto();">삭제</button>
+										</c:when>
+										<c:otherwise>
+											<button type="button" class="btn" disabled="disabled">삭제</button>
+										</c:otherwise>
+									</c:choose></td>
 								<td align="right">
 									<button type="button" class="btn"
 										onclick="location.href='${pageContext.request.contextPath}/photo/list.do?page=${page}';">리스트</button>
