@@ -7,6 +7,7 @@
 	src="${pageContext.request.contextPath}/assets/jquery/js/jquery-ui.min.js"></script>
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/assets/jquery/js/jquery.ui.datepicker-ko.js"></script>
+<!-- 수정됨 -->
 <script src="${pageContext.request.contextPath}/assets/js/browser.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/breakpoints.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/util.js"></script>
