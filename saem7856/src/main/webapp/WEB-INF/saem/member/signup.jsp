@@ -156,7 +156,9 @@ function changeEmail() {
 			<div class="inner">
 
 				<!-- Header -->
+				<header id="header">
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
+				</header>
 
 				<section>
 					<div class="title-body">
