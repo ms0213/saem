@@ -155,7 +155,7 @@ function searchList() {
 			<div class="inner">
 				
 				<!-- Header -->
-				<header>
+				<header id="header">
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 				<main>
@@ -181,6 +181,18 @@ function searchList() {
 				<th class="date">작성일</th>
 				<th class="hit">조회수</th>
 			</tr>
+			
+			<c:forEach var="dto" items="${listNotice}">
+					<tr>
+						<td><span class="notice">공지</span></td>
+						<td class="left">
+							<a href="${articleUrl}&num=${dto.num}">${dto.subject}</a>
+						</td>
+						<td>${dto.userName}</td>
+						<td>${dto.reg_date}</td>
+						<td>${dto.hitCount}</td>
+					</tr>
+			</c:forEach>
 			
 			<c:forEach var="dto" items="${list}">
 				<tr>
@@ -218,7 +230,17 @@ function searchList() {
 					</form>
 				</td>
 				<td align="right" width="100">
-					<button type="button" class="button primary small" onclick="location.href='${pageContext.request.contextPath}/bbs/write.do';">글올리기</button>
+					<c:choose>
+							<c:when test="${sessionScope.member.userId=='admin'}">
+								<button type="button" class="button primary small" onclick="location.href='${pageContext.request.contextPath}/bbs/notice.do';">글올리기</button>
+							</c:when>
+							<c:otherwise>
+			
+								<button type="button" class="button primary small" onclick="location.href='${pageContext.request.contextPath}/bbs/write.do';">글올리기</button>
+							
+							</c:otherwise>
+						</c:choose>
+				
 				</td>
 			</tr>
 		</table>	

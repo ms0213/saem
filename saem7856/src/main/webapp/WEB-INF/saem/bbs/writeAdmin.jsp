@@ -80,7 +80,14 @@ function sendOk() {
 						<input type="text" name="subject" maxlength="100" class="boxTF" value="${dto.subject}">
 					</td>
 				</tr>
-								
+				
+				<tr>
+					<td>공지여부</td>
+					<td> 
+						<p><input type="checkbox" name="notice" id="notice" value="1" ${dto.notice==1 ? "checked='checked' ":"" }> <label for="notice">공지</label></p>
+					</td>
+				</tr>
+				
 				<tr> 
 					<td>작성자</td>
 					<td> 

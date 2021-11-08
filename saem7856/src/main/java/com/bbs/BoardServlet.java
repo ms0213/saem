@@ -3,6 +3,10 @@ package com.bbs;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+//import java.text.SimpleDateFormat;
+//import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -12,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.member.SessionInfo;
+
+
 import saem.util.MyServlet;
 import saem.util.MyUtil;
 
@@ -49,6 +55,10 @@ public class BoardServlet extends MyServlet {
 			updateSubmit(req, resp);
 		} else if (uri.indexOf("delete.do") != -1) {
 			delete(req, resp);
+		} else if (uri.indexOf("notice.do") != -1) {
+			noticeForm(req, resp);
+		} else if (uri.indexOf("notice_ok.do") != -1) {
+			noticeSubmit(req, resp);
 		}
 	}
 
@@ -56,40 +66,39 @@ public class BoardServlet extends MyServlet {
 		// 게시물 리스트
 		BoardDAO dao = new BoardDAO();
 		MyUtil util = new MyUtil();
-
-		String cp = req.getContextPath();
 		
+		String cp = req.getContextPath();
+
 		try {
 			String page = req.getParameter("page");
 			int current_page = 1;
 			if (page != null) {
 				current_page = Integer.parseInt(page);
 			}
-			
-			// 검색
+
 			String condition = req.getParameter("condition");
 			String keyword = req.getParameter("keyword");
 			if (condition == null) {
 				condition = "all";
 				keyword = "";
 			}
-
-			// GET 방식인 경우 디코딩
 			if (req.getMethod().equalsIgnoreCase("GET")) {
 				keyword = URLDecoder.decode(keyword, "utf-8");
 			}
 
-			// 전체 데이터 개수
-			int dataCount;
-			if (keyword.length() == 0) {
-				dataCount = dao.dataCount();
-			} else {
+			// 한페이지 표시할 데이터 개수
+			String numPerPage = req.getParameter("rows");
+			int rows = numPerPage == null ? 10 : Integer.parseInt(numPerPage);
+
+			int dataCount, total_page;
+
+			if (keyword.length() != 0) {
 				dataCount = dao.dataCount(condition, keyword);
+			} else {
+				dataCount = dao.dataCount();
 			}
-			
-			// 전체 페이지 수
-			int rows = 10;
-			int total_page = util.pageCount(rows, dataCount);
+			total_page = util.pageCount(rows, dataCount);
+
 			if (current_page > total_page) {
 				current_page = total_page;
 			}
@@ -97,47 +106,65 @@ public class BoardServlet extends MyServlet {
 			int start = (current_page - 1) * rows + 1;
 			int end = current_page * rows;
 
-			// 게시물 가져오기
-			List<BoardDTO> list = null;
-			if (keyword.length() == 0) {
-				list = dao.listBoard(start, end);
+			List<BoardDTO> list;
+			if (keyword.length() != 0) {
+				list = dao.listNotice(start, end, condition, keyword);
 			} else {
-				list = dao.listBoard(start, end, condition, keyword);
+				list = dao.listNotice(start, end);
 			}
+
+			// 공지글
+			List<BoardDTO> listNotice = null;
+			listNotice = dao.listNotice();
+			for (BoardDTO dto : listNotice) {
+				dto.setReg_date(dto.getReg_date().substring(0, 10));
+			}
+
+			long gap;
+			Date curDate = new Date();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 			// 리스트 글번호 만들기
 			int listNum, n = 0;
 			for (BoardDTO dto : list) {
 				listNum = dataCount - (start + n - 1);
 				dto.setListNum(listNum);
+
+				Date date = sdf.parse(dto.getReg_date());
+				// gap = (curDate.getTime() - date.getTime()) / (1000*60*60*24); // 일자
+				gap = (curDate.getTime() - date.getTime()) / (1000 * 60 * 60); // 시간
+				dto.setGap(gap);
+
+				dto.setReg_date(dto.getReg_date().substring(0, 10));
 				n++;
 			}
 
 			String query = "";
+			String listUrl;
+			String articleUrl;
+
+			listUrl = cp + "/bbs/list.do?rows=" + rows;
+			articleUrl = cp + "/bbs/article.do?page=" + current_page + "&rows=" + rows;
 			if (keyword.length() != 0) {
 				query = "condition=" + condition + "&keyword=" + URLEncoder.encode(keyword, "utf-8");
-			}
 
-			// 페이징 처리
-			String listUrl = cp + "/bbs/list.do";
-			String articleUrl = cp + "/bbs/article.do?page=" + current_page;
-			if (query.length() != 0) {
-				listUrl += "?" + query;
+				listUrl += "&" + query;
 				articleUrl += "&" + query;
 			}
 
 			String paging = util.paging(current_page, total_page, listUrl);
 
-			// 포워딩할 JSP에 전달할 속성
+			// 포워딩 jsp에 전달할 데이터
 			req.setAttribute("list", list);
+			req.setAttribute("listNotice", listNotice);
+			req.setAttribute("articleUrl", articleUrl);
+			req.setAttribute("dataCount", dataCount);
 			req.setAttribute("page", current_page);
 			req.setAttribute("total_page", total_page);
-			req.setAttribute("dataCount", dataCount);
-			req.setAttribute("articleUrl", articleUrl);
 			req.setAttribute("paging", paging);
 			req.setAttribute("condition", condition);
 			req.setAttribute("keyword", keyword);
-			
+			req.setAttribute("rows", rows);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -150,6 +177,12 @@ public class BoardServlet extends MyServlet {
 		// 글쓰기 폼
 		req.setAttribute("mode", "write");
 		forward(req, resp, "/WEB-INF/saem/bbs/write.jsp");
+	}
+	
+	private void noticeForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 공지사항 글쓰기 폼
+		req.setAttribute("mode", "notice");
+		forward(req, resp, "/WEB-INF/saem/bbs/writeAdmin.jsp");
 	}
 
 	private void writeSubmit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -172,6 +205,43 @@ public class BoardServlet extends MyServlet {
 			dto.setUserId(info.getUserId());
 
 			// 파라미터
+			if (req.getParameter("notice") != null) {
+				dto.setNotice(Integer.parseInt(req.getParameter("notice")));
+			}
+			dto.setSubject(req.getParameter("subject"));
+			dto.setContent(req.getParameter("content"));
+
+			dao.insertBoard(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		resp.sendRedirect(cp + "/bbs/list.do");
+	}
+	
+	private void noticeSubmit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 글 저장
+		BoardDAO dao = new BoardDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+		
+		String cp = req.getContextPath();
+		if (req.getMethod().equalsIgnoreCase("GET")) {
+			resp.sendRedirect(cp + "/bbs/list.do");
+			return;
+		}
+		
+		try {
+			BoardDTO dto = new BoardDTO();
+
+			// userId는 세션에 저장된 정보
+			dto.setUserId(info.getUserId());
+
+			// 파라미터
+			if (req.getParameter("notice") != null) {
+				dto.setNotice(Integer.parseInt(req.getParameter("notice")));
+			}
 			dto.setSubject(req.getParameter("subject"));
 			dto.setContent(req.getParameter("content"));
 

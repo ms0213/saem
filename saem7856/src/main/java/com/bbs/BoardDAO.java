@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import saem.util.DBConn;
 
 public class BoardDAO {
@@ -16,18 +17,40 @@ public class BoardDAO {
 	public int insertBoard(BoardDTO dto) throws SQLException {
 		int result = 0;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		String sql;
+		int seq;
 
 		try {
-			sql = "INSERT INTO bbs(num, userId, subject, content, hitCount, reg_date) "
-					+ " VALUES (bbs_seq.NEXTVAL, ?, ?, ?, 0, SYSDATE)";
+			sql = "SELECT bbs_seq.NEXTVAL FROM dual";
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, dto.getUserId());
-			pstmt.setString(2, dto.getSubject());
-			pstmt.setString(3, dto.getContent());
+			rs = pstmt.executeQuery();
+			
+			seq = 0;
+			if (rs.next()) {
+				seq = rs.getInt(1);
+			}
+			dto.setNum(seq);
+
+			rs.close();
+			pstmt.close();
+			rs = null;
+			pstmt = null;
+
+			sql = "INSERT INTO bbs(num, notice, userId, subject, content, hitCount, reg_date) "
+					+ "  VALUES (?, ?, ?, ?, ?, 0, SYSDATE)";
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, dto.getNum());
+			pstmt.setInt(2, dto.getNotice());
+			pstmt.setString(3, dto.getUserId());
+			pstmt.setString(4, dto.getSubject());
+			pstmt.setString(5, dto.getContent());
 
 			result = pstmt.executeUpdate();
+			pstmt.close();
+			pstmt = null;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -547,4 +570,240 @@ public class BoardDAO {
 		}
 		return result;
 	}
+	
+	// 공지글
+		public List<BoardDTO> listNotice() {
+			List<BoardDTO> list = new ArrayList<BoardDTO>();
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			StringBuilder sb = new StringBuilder();
+
+			try {
+				sb.append("SELECT num, b.userId, userName, subject, ");
+				sb.append("       hitCount, TO_CHAR(reg_date, 'YYYY-MM-DD') reg_date  ");
+				sb.append(" FROM bbs b ");
+				sb.append(" JOIN member1 m ON b.userId=m.userId ");
+				sb.append(" WHERE notice=1  ");
+				sb.append(" ORDER BY num DESC ");
+
+				pstmt = conn.prepareStatement(sb.toString());
+
+				rs = pstmt.executeQuery();
+
+				while (rs.next()) {
+					BoardDTO dto = new BoardDTO();
+
+					dto.setNum(rs.getInt("num"));
+					dto.setUserId(rs.getString("userId"));
+					dto.setUserName(rs.getString("userName"));
+					dto.setSubject(rs.getString("subject"));
+					dto.setHitCount(rs.getInt("hitCount"));
+					dto.setReg_date(rs.getString("reg_date"));
+
+					list.add(dto);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				if (rs != null) {
+					try {
+						rs.close();
+					} catch (SQLException e) {
+					}
+				}
+
+				if (pstmt != null) {
+					try {
+						pstmt.close();
+					} catch (SQLException e) {
+					}
+				}
+			}
+
+			return list;
+		}
+
+		public BoardDTO readNotice(int num) {
+			BoardDTO dto = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			String sql;
+
+			try {
+				sql = "SELECT num, notice, b.userId, userName, subject, content, hitCount, reg_date "
+						+ " FROM bbs b "
+						+ " JOIN member1 m ON b.userId=m.userId "
+						+ " WHERE num = ?";
+				pstmt = conn.prepareStatement(sql);
+				
+				pstmt.setInt(1, num);
+
+				rs = pstmt.executeQuery();
+
+				if (rs.next()) {
+					dto = new BoardDTO();
+
+					dto.setNum(rs.getInt("num"));
+					dto.setNotice(rs.getInt("notice"));
+					dto.setUserId(rs.getString("userId"));
+					dto.setUserName(rs.getString("userName"));
+					dto.setSubject(rs.getString("subject"));
+					dto.setContent(rs.getString("content"));
+					dto.setHitCount(rs.getInt("hitCount"));
+					dto.setReg_date(rs.getString("reg_date"));
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				if (rs != null) {
+					try {
+						rs.close();
+					} catch (SQLException e) {
+					}
+				}
+
+				if (pstmt != null) {
+					try {
+						pstmt.close();
+					} catch (SQLException e) {
+					}
+				}
+			}
+
+			return dto;
+		}
+		
+		public List<BoardDTO> listNotice(int start, int end, String condition, String keyword) {
+			List<BoardDTO> list = new ArrayList<BoardDTO>();
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			StringBuilder sb = new StringBuilder();
+
+			try {
+				sb.append(" SELECT * FROM ( ");
+				sb.append("     SELECT ROWNUM rnum, tb.* FROM ( ");
+				sb.append("         SELECT num, b.userId, userName, subject, ");
+				sb.append("               hitCount, reg_date ");
+				sb.append("         FROM bbs b ");
+				sb.append("         JOIN member1 m ON b.userId = m.userId ");
+				if (condition.equals("all")) {
+					sb.append("     WHERE INSTR(subject, ?) >= 1 OR INSTR(content, ?) >= 1 ");
+				} else if (condition.equals("reg_date")) {
+					keyword = keyword.replaceAll("(\\-|\\/|\\.)", "");
+					sb.append("     WHERE TO_CHAR(reg_date, 'YYYYMMDD') = ?");
+				} else {
+					sb.append("     WHERE INSTR(" + condition + ", ?) >= 1 ");
+				}
+				sb.append("         ORDER BY num DESC ");
+				sb.append("     ) tb WHERE ROWNUM <= ? ");
+				sb.append(" ) WHERE rnum >= ? ");
+				
+				pstmt = conn.prepareStatement(sb.toString());
+				
+				if (condition.equals("all")) {
+					pstmt.setString(1, keyword);
+					pstmt.setString(2, keyword);
+					pstmt.setInt(3, end);
+					pstmt.setInt(4, start);
+				} else {
+					pstmt.setString(1, keyword);
+					pstmt.setInt(2, end);
+					pstmt.setInt(3, start);
+				}
+
+				rs = pstmt.executeQuery();
+
+				while (rs.next()) {
+					BoardDTO dto = new BoardDTO();
+
+					dto.setNum(rs.getInt("num"));
+					dto.setUserId(rs.getString("userId"));
+					dto.setUserName(rs.getString("userName"));
+					dto.setSubject(rs.getString("subject"));
+					dto.setHitCount(rs.getInt("hitCount"));
+					dto.setReg_date(rs.getString("reg_date")); // yyyy-MM-dd HH:mm:ss
+
+					list.add(dto);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				if (rs != null) {
+					try {
+						rs.close();
+					} catch (SQLException e) {
+					}
+				}
+
+				if (pstmt != null) {
+					try {
+						pstmt.close();
+					} catch (SQLException e) {
+					}
+				}
+			}
+
+			return list;
+		}
+		
+		// 게시물 리스트
+		public List<BoardDTO> listNotice(int start, int end) {
+			List<BoardDTO> list = new ArrayList<BoardDTO>();
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
+			StringBuilder sb = new StringBuilder();
+
+			try {
+				sb.append(" SELECT * FROM ( ");
+				sb.append("     SELECT ROWNUM rnum, tb.* FROM ( ");
+				sb.append("         SELECT num, n.userId, userName, subject, ");
+				sb.append("               hitCount, reg_date ");
+				sb.append("         FROM bbs n ");
+				sb.append("         JOIN member1 m ON n.userId = m.userId ");
+				sb.append("         ORDER BY num DESC ");
+				sb.append("     ) tb WHERE ROWNUM <= ? ");
+				sb.append(" ) WHERE rnum >= ? ");
+
+				pstmt = conn.prepareStatement(sb.toString());
+				
+				pstmt.setInt(1, end);
+				pstmt.setInt(2, start);
+
+				rs = pstmt.executeQuery();
+
+				while (rs.next()) {
+					BoardDTO dto = new BoardDTO();
+
+					dto.setNum(rs.getInt("num"));
+					dto.setUserId(rs.getString("userId"));
+					dto.setUserName(rs.getString("userName"));
+					dto.setSubject(rs.getString("subject"));
+					dto.setHitCount(rs.getInt("hitCount"));
+					dto.setReg_date(rs.getString("reg_date"));
+
+					list.add(dto);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				if (rs != null) {
+					try {
+						rs.close();
+					} catch (SQLException e) {
+					}
+				}
+
+				if (pstmt != null) {
+					try {
+						pstmt.close();
+					} catch (SQLException e) {
+					}
+				}
+			}
+
+			return list;
+		}
 }

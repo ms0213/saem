@@ -3,6 +3,7 @@ package com.bbs;
 public class BoardDTO {
 	private int listNum;
 	private int num;
+	private int notice;
 	private String userId;
 	private String userName;
 	private String subject;
@@ -10,7 +11,25 @@ public class BoardDTO {
 	private String reg_date;
 	private int hitCount;
 	
+	private long gap;
 	
+	
+	
+	
+	
+	
+	public long getGap() {
+		return gap;
+	}
+	public void setGap(long gap) {
+		this.gap = gap;
+	}
+	public int getNotice() {
+		return notice;
+	}
+	public void setNotice(int notice) {
+		this.notice = notice;
+	}
 	public String getUserName() {
 		return userName;
 	}

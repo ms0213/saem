@@ -20,15 +20,7 @@
 			<ul>
 				<li><a href="${pageContext.request.contextPath}/">Homepage</a></li>
 				<li><a href="./aboutUs.html">About us</a></li>
-				<li><span class="opener">League</span>
-					<ul>
-						<li><a href="#">EPL</a></li>
-						<li><a href="#">라리가</a></li>
-						<li><a href="#">분데스리가</a></li>
-						<li><a href="#">리그1</a></li>
-						<li><a href="#">러시아 프리미어리그</a></li>
-						<li><a href="#">쉬페르리그</a></li>
-					</ul></li>
+				<li><a href="${pageContext.request.contextPath}/player/list.do">Players</a></li>
 				<li><span class="opener">News</span>
 					<ul>
 						<li><a href="${pageContext.request.contextPath}/fixture/list.do">일정</a></li>
@@ -50,6 +42,7 @@
 				<li><span class="opener">Admin</span>
 					<ul>
 						<li><a href="${pageContext.request.contextPath}/announce/write.do">공지사항 등록</a></li>
+						<li><a href="${pageContext.request.contextPath}/bbs/notice.do">자유게시판 공지사항 등록</a></li>
 						<li><a href="${pageContext.request.contextPath}/goods/write.do">굿즈 등록</a></li>
 						<li><a href="${pageContext.request.contextPath}/photo/write.do">사진 등록</a></li>
 						<li><a href="${pageContext.request.contextPath}/article/write.do">기사 등록</a></li>
