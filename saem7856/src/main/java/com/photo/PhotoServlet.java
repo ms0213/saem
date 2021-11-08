@@ -176,6 +176,8 @@ public class PhotoServlet extends MyUploadServlet {
 		try {
 			int num = Integer.parseInt(req.getParameter("num"));
 			
+			dao.updateHitCount(num);
+			
 			PhotoDTO dto = dao.readPhoto(num);
 			if(dto == null) {
 				resp.sendRedirect(cp + "/photo/list.do?page="+page);

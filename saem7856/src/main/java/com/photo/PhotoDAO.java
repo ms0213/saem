@@ -165,6 +165,33 @@ public class PhotoDAO {
 		return list;
 	}
 	
+	public int updateHitCount(int num) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+
+		try {
+			sql = "UPDATE gallery SET hitCount=hitCount+1 WHERE num=?";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, num);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e2) {
+				}
+			}
+		}
+
+		return result;
+	}
+	
 	public PhotoDTO readPhoto(int num) {
 		PhotoDTO dto = null;
 		PreparedStatement pstmt = null;

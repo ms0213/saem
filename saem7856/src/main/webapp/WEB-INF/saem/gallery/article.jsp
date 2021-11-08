@@ -61,7 +61,7 @@
 </style>
 <script type="text/javascript">
 	function deletePhoto() {
-		if (confirm("게시글을 삭제 하시 겠습니까 ? ")) {
+		if (confirm("게시글을 삭제하시겠습니까?")) {
 			var query = "num=${dto.num}&page=${page}";
 			var url = "${pageContext.request.contextPath}/photo/delete.do?"
 					+ query;
@@ -113,7 +113,7 @@
 							</tr>
 
 							<tr>
-								<td align="right">${dto.reg_date}</td>
+								<td align="right">${dto.reg_date} | 조회 ${dto.hitCount}</td>
 							</tr>
 
 							<tr>

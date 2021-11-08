@@ -106,7 +106,7 @@
 			</header>
 			<div class="body-title">
 				<h3>
-					<i class="far fa-image"></i> 포토 앨범
+					<i class="far fa-image"></i> 사진 등록
 				</h3>
 			</div>
 
