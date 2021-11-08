@@ -46,9 +46,6 @@ function searchList() {
 					<table >
 						<tr>
 							<td width="50%">
-								<c:if test="${sessionScope.member.userId=='admin'}">
-									<button type="button" class="btn" id="btnDeleteList">삭제</button>
-								</c:if>
 								<c:if test="${sessionScope.member.userId!='admin'}">
 									${dataCount}개(${page}/${total_page} 페이지)
 								</c:if>

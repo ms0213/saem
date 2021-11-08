@@ -151,7 +151,7 @@ function deleteBoard(){
 					
 					<tr>
 						<td width="50%">
-							이름 : ${dto.userName}
+							이름 : ${sessionScope.member.userName}
 						</td>
 						<td align="right">
 							${dto.reg_date} | 조회 ${dto.hitCount}
@@ -189,7 +189,7 @@ function deleteBoard(){
 					<tr>
 						<td width="50%">
 							<c:choose>
-								<c:when test="${sessionScope.member.userId==dto.userId  || dto.userId=='admin'}">
+								<c:when test="${sessionScope.member.userId==dto.userId}">
 									<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/trade/update.do?num=${dto.num}&page=${page}';">수정</button>
 								</c:when>
 								<c:otherwise>

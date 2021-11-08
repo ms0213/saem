@@ -39,12 +39,12 @@ public class TradeServlet extends MyUploadServlet{
 		SessionInfo info = (SessionInfo)session.getAttribute("member");
 		
 		// 로그인된 정보가 없으면
-		/*
+
 		if(info==null) {
 			forward(req,resp,"/WEB-INF/saem/member/login.jsp");
 			return;
 		}
-		*/
+	
 		
 		// 서버에 파일이 저장되는 위치
 		String root = session.getServletContext().getRealPath("/");
@@ -195,9 +195,7 @@ public class TradeServlet extends MyUploadServlet{
 		
 		try {
 			TradeDTO dto = new TradeDTO();
-			dto.setUserId("admin");
-		
-//			dto.setUserId(info.getUserId());
+			dto.setUserId(info.getUserId());
 			dto.setSubject(req.getParameter("subject"));
 			dto.setContent(req.getParameter("content"));
 			dto.setType(req.getParameter("tradeType"));
@@ -288,11 +286,11 @@ public class TradeServlet extends MyUploadServlet{
 			}
 			
 			// 게시물을 올린 사용자가 아닐 때
-/*			if( !dto.getUserId().equals(info.getUserId())) {
+			if( !dto.getUserId().equals(info.getUserId())) {
 				resp.sendRedirect(cp+"/trade/list.do?page="+page);
 				return;
 			}
-	*/		
+		
 			List<TradeDTO> listFile	= dao.listPhotoFile(num);
 			req.setAttribute("dto", dto);
 			req.setAttribute("page", page);
@@ -362,11 +360,11 @@ public class TradeServlet extends MyUploadServlet{
 				return;
 			}
 			
-/*			if(!info.getUserId().equals(dto.getUserId())) {
+			if(!info.getUserId().equals(dto.getUserId())) {
 				resp.sendRedirect(cp+"/trade/list.do?page="+page);
 				return;
 			}
-*/			
+			
 			List<TradeDTO> listFile = dao.listPhotoFile(num);
 			
 			for(TradeDTO vo : listFile) {
@@ -426,14 +424,13 @@ public class TradeServlet extends MyUploadServlet{
 			
 
 			// 글을 등록한 사람, admin 만 삭제 가능
-			/*
+
 			if (!info.getUserId().equals(dto.getUserId()) && !info.getUserId().equals("admin")) {
 				resp.sendRedirect(cp + "/trade/list.do?" + query);
 				return;
 			}
-			*/
-//			dao.deleteTrade(num, info.getUserId());
-			dao.deleteTrade(num, "admin");
+
+			dao.deleteTrade(num, info.getUserId());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
