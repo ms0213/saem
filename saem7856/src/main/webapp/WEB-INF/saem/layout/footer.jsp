@@ -19,7 +19,7 @@
 			</header>
 			<ul>
 				<li><a href="${pageContext.request.contextPath}/">Homepage</a></li>
-				<li><a href="./aboutUs.html">About us</a></li>
+				<li><a href="${pageContext.request.contextPath}/aboutUs.html">About us</a></li>
 				<li><a href="${pageContext.request.contextPath}/player/list.do">Players</a></li>
 				<li><span class="opener">News</span>
 					<ul>
