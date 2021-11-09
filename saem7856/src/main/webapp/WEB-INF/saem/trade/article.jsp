@@ -47,67 +47,15 @@
 	width: 570px; height: 600px;
 }
 
+
 </style>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-$(function() {
-   $("body").on("click",".btnSendReply", function() {
-      var num = "10";
-      var $tb = $(this).closest("table");
-      var content = $tb.find("textarea").val().trim();
-      
-      if(! content){
-         $tb.find("textarea").focus();
-         return false;
-      }
-      
-      content = encodeURIComponent(content);
-      
-      var query = "num="+num+"&content="+content;
-      alert(query);
-      
-   });
-});
-
-//답글버튼
-$(function() {
-   $("body").on("click",".btnReplyAnswerLayout", function() {
-      var $tr = $(this).closest("tr").next();
-      var replyNum = $(this).attr("data-replyNum");
-      
-      var isVisible = $tr.is(":visible");
-      if(isVisible){
-         $tr.hide();
-      } else {
-         $tr.show();
-      }
-      
-   });
-});
-
-// 답글 등록 버튼
-$(function(){
-	$("body").on("click",".btnSendReplyAnswer",function(){
-		var num = "10";
-		var replyNum = $(this).attr("data-replyNum");
-		
-		var $td = $(this).closest("td");
-		var content = $td.find("textarea").val().trim();
-		if(!content){
-			$td.find("textarea").focus();
-			return false;
-		}
-		content = encodeURIComponent(content);
-		var query = "num="+num+"&content="+content+"&answer="+replyNum;
-		alert(query);
-	});	
-});
 
 function imageViewer(img) {
 	var viewer = $(".photo-layout");
 	var s="<img src='"+img+"'>";
 	viewer.html(s);
-	
+
 	$(".dialog-photo").dialog({
 		title:"이미지",
 		width: 600,
@@ -123,6 +71,205 @@ function deleteBoard(){
 		location.href= url;
 	}
 }
+
+// 댓글 및 답글
+// AJAX
+function ajaxFun(url, method, query, dataType, fn){
+	$.ajax({
+		type:method,
+		url : url,
+		data:query,
+		dataType : dataType,
+		success:function(data){
+			fn(data);
+		},
+		beforeSend:function(jqXHR) {
+			jqXHR.setRequestHeader("AJAX", true);
+		},
+		error:function(jqXHR) {
+			if(jqXHR.status === 403) {
+				login();
+				return false;
+			} else if(jqXHR.status === 405) {
+				alert("접근을 허용하지 않습니다.");
+				return false;
+			}
+	    	
+			console.log(jqXHR.responseText);
+		}
+	});
+}
+
+// 댓글 리스트
+$(function(){
+	listPage(1);
+});
+
+function listPage(page){
+	var url = "${pageContext.request.contextPath}/trade/listReply.do";
+	var query = "num=${dto.num}&pageNo="+page;
+	var selector = "#listReply";
+	
+	var fn = function(data){
+		$(selector).html(data);
+	};
+	
+	ajaxFun(url,"get",query,"html",fn);  // select 에서 list를 긁어오니까 get으로 주소줄에 매개변수를 넣기때문
+}
+
+// 댓글 등록
+$(function(){
+	$(".btnSendReply").click(function(){
+		var num = "${dto.num}";
+		var $tb = $(this).closest("table");
+		var content = $tb.find("textarea").val().trim();
+		if(! content) {
+			$tb.find("textarea").focus();
+			return false;
+		}
+		content = encodeURIComponent(content);		
+		var url = "${pageContext.request.contextPath}/trade/insertReply.do";
+		var query = "num="+num+"&content="+content+"&answer=0";
+		
+		var fn = function(data) {
+			var state = data.state;
+			
+			$tb.find("textarea").val("");
+			
+			if(state === "true") {
+				listPage(1);
+			} else {
+				alert("댓글 추가가 실패 했습니다.");
+			}
+			
+		};
+		ajaxFun(url, "post", query, "json", fn); // post : 각각의 데이터를 주소줄에 보내는게 아니라 몸체에 넣어서 보냄
+	});
+});
+
+//댓글 삭제
+$(function(){
+	$("body").on("click", ".deleteReply", function(){
+		if(! confirm("게시글을 삭제 하시겠습니까 ? ")) {
+			return false;
+		}
+		
+		var replyNum = $(this).attr("data-replyNum");
+		var pageNo = $(this).attr("data-pageNo");
+		
+		var url = "${pageContext.request.contextPath}/trade/deleteReply.do";
+		var query = "replyNum=" + replyNum;
+		
+		var fn = function(data) {
+			listPage(pageNo);
+		};
+		
+		ajaxFun(url, "post", query, "json", fn);
+	});
+});
+
+//댓글별 답글 리스트
+function listReplyAnswer(answer) {
+	var url = "${pageContext.request.contextPath}/trade/listReplyAnswer.do";
+	var query = "answer=" + answer;
+	var selector = "#listReplyAnswer" + answer;
+	
+	var fn = function(data) {
+		$(selector)	.html(data);
+	};
+	ajaxFun(url, "get", query, "html", fn);
+}
+
+// 댓글별 답글 개수
+function countReplyAnswer(answer) {
+	var url = "${pageContext.request.contextPath}/trade/countReplyAnswer.do";
+	var query = "answer=" + answer;
+
+	var fn = function(data) {
+		var count = data.count;
+		var selector = "#answerCount"+answer;
+		$(selector).html(count);
+	};
+	ajaxFun(url, "post", query, "json", fn);
+}
+
+
+// 답글 버튼
+$(function(){
+	$("body").on("click", ".btnReplyAnswerLayout", function(){
+		var $tr = $(this).closest("tr").next();
+		
+		var isVisible = $tr.is(":visible");
+		var replyNum = $(this).attr("data-replyNum");
+		
+		if( isVisible ) {
+			$tr.hide();
+		} else {
+			$tr.show();
+			
+			// 답글 리스트
+			listReplyAnswer(replyNum);
+			
+			// 답글 개수
+			countReplyAnswer(replyNum);
+		}
+		
+	});
+})
+
+// 답글 등록 버튼
+$(function(){
+	$("body").on("click", ".btnSendReplyAnswer", function(){
+		var num = "${dto.num}";
+		var replyNum = $(this).attr("data-replyNum");
+		var $td = $(this).closest("td");
+		
+		var content = $td.find("textarea").val().trim();
+		if(! content) {
+			 $td.find("textarea").focus();
+			 return false;
+		}
+		content = encodeURIComponent(content);
+		
+		var url = "${pageContext.request.contextPath}/trade/insertReplyAnswer.do";
+		var query = "num="+num+"&content="+content+"&answer="+replyNum;
+		
+		var fn = function(data) {
+			$td.find("textarea").val("");
+			
+			var state = data.state;
+			if(state === "true") {
+				listReplyAnswer(replyNum);
+				countReplyAnswer(replyNum);
+			}
+		};
+		
+		ajaxFun(url, "post", query, "json", fn);
+		
+	});
+});
+
+// 답글 삭제
+$(function(){
+	$("body").on("click", ".deleteReplyAnswer", function(){
+		if(! confirm("게시글을 삭제 하시겠습니까 ?")) {
+			return false;
+		}
+		
+		var replyNum = $(this).attr("data-replyNum");
+		var answer = $(this).attr("data-answer");
+		
+		var url = "${pageContext.request.contextPath}/trade/deleteReplyAnswer.do";
+		var query = "replyNum=" + replyNum;
+		
+		var fn = function(data) {
+			listReplyAnswer(answer);
+			countReplyAnswer(answer);
+		};
+		ajaxFun(url, "post", query, "json", fn);
+	});
+});
+
 </script>
 </head>
 <body class="is-preload">
@@ -151,7 +298,7 @@ function deleteBoard(){
 					
 					<tr>
 						<td width="50%">
-							이름 : ${sessionScope.member.userName}
+							이름 : ${dto.userName}
 						</td>
 						<td align="right">
 							${dto.reg_date} | 조회 ${dto.hitCount}
@@ -212,107 +359,30 @@ function deleteBoard(){
 					</tr>
 				</table>
 				
-				<div>
-					<table>
-			          <tr height='30'> 
-			           <td align='left' >
-			              <span style='font-weight: bold;' >댓글쓰기</span><span> - 타인을 비방하거나 개인정보를 유출하는 글의 게시를 삼가 주세요.</span>
-			           </td>
-			          </tr>
-			          <tr>
-			             <td style='padding:5px 0 5px 5px;'>
-			                  <textarea class='boxTA' style='width:100%; resize:none; height: 70px;'></textarea>
-			              </td>
-			          </tr>
-			          <tr>
-			             <td align='right'>
-			                  <button type='button' class='btn btnSendReply' style='padding:10px 20px;'>댓글 등록</button>
-			              </td>
-			          </tr>
-			     </table>
-	          
-			     <div id="listReply">
-			      <table style='width: 100%; margin: 10px auto 30px; border-spacing: 0;'>
-			         <thead id="listReplyHeader">
-			            <tr height="35">
-			                <td colspan='2'>
-			                   <div style="clear: both;">
-			                       <div style="float: left;"><span style="color: #3EA9CD; font-weight: bold;">댓글 50개</span> <span>[댓글 목록, 1/10 페이지]</span></div>
-			                       <div style="float: right; text-align: right;"></div>
-			                   </div>
-			                </td>
-			            </tr>
-			         </thead>
-			         <tbody id="listReplyBody">
-		
-			             <tr height='35' style='background: #eeeeee;'>
-			                <td width='50%' style='padding:5px 5px; border:1px solid #cccccc; border-right:none;'>
-			                    <span><b>가가가</b></span>
-			                 </td>
-			                <td width='50%' style='padding:5px 5px; border:1px solid #cccccc; border-left:none;' align='right'>
-			                    <span>2017-10-10</span> |
-			                    <span class="deleteReply" style="cursor: pointer;" data-replyNum='309' data-pageNo='1'>삭제</span>
-			                 </td>
-			             </tr>
-			             <tr>
-			                 <td colspan='2' valign='top' style='padding:5px 5px;'>
-			                       안녕 하세요.
-			                 </td>
-			             </tr>
-			             
-			             <tr>
-			                 <td style='padding:7px 5px;'>
-			                     <button type='button' class='btn btnReplyAnswerLayout' data-replyNum='309'>답글 <span id="answerCount309">1</span></button>
-			                 </td>
-			             </tr>
-			         
-			             <tr class='replyAnswer' style='display: none;'>
-			                 <td colspan='2'>
-			                     <div id='listReplyAnswer309' class='answerList' style='border-top: 1px solid #cccccc;'>
-			                     
-			                      <div class='answer' style='padding: 0px 10px;'>
-			                          <div style='clear:both; padding: 10px 0px;'>
-			                              <div style='float: left; width: 5%;'>└</div>
-			                              <div style='float: left; width:95%;'>
-			                                  <div style='float: left;'><b>후후후</b></div>
-			                                  <div style='float: right;'>
-			                                      <span>2017-11-22</span> |
-			                                      <span class='deleteReplyAnswer' style='cursor: pointer;' data-replyNum='315' data-answer='309'>삭제</span>
-			                                  </div>
-			                              </div>
-			                          </div>
-			                          <div style='clear:both; padding: 5px 5px 5px 5%; border-bottom: 1px solid #ccc;'>
-			                              답글 입니다.
-			                          </div>
-			                      </div>                     
-			                     
-			                     </div>
-			                     <div style='clear: both; padding: 10px 10px;'>
-			                         <div style='float: left; width: 5%;'>└</div>
-			                         <div style='float: left; width:95%'>
-			                             <textarea cols='72' rows='12' class='boxTA' style='width:98%; height: 70px;'></textarea>
-			                          </div>
-			                     </div>
-			                      <div style='padding: 0px 13px 10px 10px; text-align: right;'>
-			                         <button type='button' class='btn btnSendReplyAnswer' data-replyNum='309'>답글 등록</button>
-			                     </div>
-			                 
-			                 </td>
-			             </tr>
-		
-				        </tbody>
-				        <tfoot id="listReplyFooter">
-				           <tr height='40' align="center">
-				                 <td colspan='2' >
-				                   1 2 3
-				                 </td>
-				              </tr>
-				       	</tfoot>
-				    </table>
+				<div class="reply">
+					<form name="replyForm" method="post">
+						<div class='form-header'>
+							<span class="bold">댓글쓰기</span><span> - 타인을 비방하거나 개인정보를 유출하는 글의 게시를 삼가해 주세요.</span>
+						</div>
+						
+						<table class="table reply-form">
+							<tr>
+								<td>
+									<textarea class='boxTA' name="content" style="resize:none"></textarea>
+								</td>
+							</tr>
+							<tr>
+							   <td align='right'>
+							        <button type='button' class='btn btnSendReply'>댓글 등록</button>
+							    </td>
+							 </tr>
+						</table>
+					</form>
+					
+					<div id="listReply"></div>
 				</div>
-		    </div>
+			</div>
 		</div>
-	</div>
 		
 	<!-- Sidebar -->
 	<div id="sidebar">
@@ -320,7 +390,9 @@ function deleteBoard(){
 	</div>
 			
 </div>
-
+	<div class="dialog-photo">
+      <div class="photo-layout"></div>
+</div>
 	<!-- Scripts -->	
 	<jsp:include page="/WEB-INF/saem/layout/staticFooter.jsp"/>
 </body>

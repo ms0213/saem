@@ -2,6 +2,7 @@ package com.trade;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -15,6 +16,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
 
 import com.member.SessionInfo;
 
@@ -68,6 +71,20 @@ public class TradeServlet extends MyUploadServlet{
 			deleteFile(req, resp);
 		} else if (uri.indexOf("delete.do") != -1) {
 			delete(req, resp);
+		} else if(uri.indexOf("insertReply.do") != -1) {
+			insertReply(req, resp);
+		} else if(uri.indexOf("listReply.do") != -1) {
+			listReply(req, resp);
+		} else if(uri.indexOf("deleteReply.do") != -1) {
+			deleteReply(req, resp);
+		} else if(uri.indexOf("insertReplyAnswer.do") != -1) {
+			insertReplyAnswer(req, resp);
+		} else if(uri.indexOf("listReplyAnswer.do") != -1) {
+			listReplyAnswer(req, resp);
+		} else if(uri.indexOf("deleteReplyAnswer.do") != -1) {
+			deleteReplyAnswer(req, resp);
+		} else if(uri.indexOf("countReplyAnswer.do") != -1) {
+			countReplyAnswer(req, resp);
 		}
 	}
 
@@ -436,4 +453,169 @@ public class TradeServlet extends MyUploadServlet{
 		}
 		resp.sendRedirect(cp+"/trade/list.do?"+query);
 	}
+	
+	// 댓글 추가 (AJAX : JSON)
+	protected void insertReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		TradeDAO dao = new TradeDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
+		
+		String state = "false";
+		
+		try {
+			ReplyDTO dto = new ReplyDTO();
+			
+			int num = Integer.parseInt(req.getParameter("num"));
+			dto.setNum(num);
+			dto.setUserId(info.getUserId());
+			dto.setContent(req.getParameter("content"));
+			
+			String answer = req.getParameter("answer");
+			
+			if(answer!=null) dto.setAnswer(Integer.parseInt(answer));
+			
+			dao.insertReply(dto);
+			
+			state = "true";
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		JSONObject job = new JSONObject();
+		job.put("state", state);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
+	}
+
+	// 댓글 리스트
+	protected void listReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		TradeDAO dao = new TradeDAO();
+		MyUtil util = new MyUtil();
+		
+		try {
+			int num = Integer.parseInt(req.getParameter("num"));
+			String pageNo = req.getParameter("pageNo");
+			int current_page = 1;
+			if(pageNo != null) {
+				current_page = Integer.parseInt(pageNo);
+			}
+			
+			int rows = 5;
+			int total_page = 0;
+			int replyCount = 0;
+			
+			replyCount = dao.dataCountReply(num);
+			total_page = util.pageCount(rows, replyCount);
+			if(current_page > total_page) {
+				current_page = total_page;
+			}
+			
+			int start = (current_page - 1) * rows + 1;
+			int end = current_page * rows;
+			
+			List<ReplyDTO> listReply = dao.listReply(num, start, end);
+			
+			for(ReplyDTO dto : listReply) {
+				dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+			}
+			
+			String paging = util.pagingMethod(current_page, total_page, "listPage");
+			
+			req.setAttribute("listReply", listReply);
+			req.setAttribute("pageNo", current_page);
+			req.setAttribute("replyCount", replyCount);
+			req.setAttribute("total_page", total_page);
+			req.setAttribute("paging", paging);
+			
+			forward(req, resp, "/WEB-INF/saem/trade/listReply.jsp");
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		resp.sendError(405);
+
+	}
+
+	// 댓글 삭제
+	protected void deleteReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		TradeDAO dao= new TradeDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
+		String state = "false";
+
+		try {
+			int replyNum = Integer.parseInt(req.getParameter("replyNum"));
+			dao.deleteReply(replyNum, info.getUserId());
+			state = "true";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		JSONObject job = new JSONObject();
+		job.put("state", state);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());	
+		
+	}
+
+	// 답글 추가
+	protected void insertReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		insertReply(req, resp);
+	}
+
+	// 답글 리스트
+	protected void listReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		TradeDAO dao = new TradeDAO();
+		
+		try {
+			int answer = Integer.parseInt(req.getParameter("answer"));
+			List<ReplyDTO> listReplyAnswer= dao.listReplyAnswer(answer);
+			for(ReplyDTO dto : listReplyAnswer) {
+				dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+			}
+			
+			req.setAttribute("listReplyAnswer", listReplyAnswer);
+			forward(req, resp, "/WEB-INF/saem/trade/listReplyAnswer.jsp");
+			
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		resp.sendError(405);
+	}
+
+	// 답글 삭제
+	protected void deleteReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		deleteReply(req, resp);
+	}
+
+	// 답글 개수
+	protected void countReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		TradeDAO dao = new TradeDAO();
+		int count = 0;
+		
+		try {
+			int answer= Integer.parseInt(req.getParameter("answer"));
+			count = dao.dataCountReplyAnswer(answer);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		JSONObject job = new JSONObject();
+		job.put("count", count);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());			
+		
+	}
+
 }
