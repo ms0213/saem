@@ -30,6 +30,13 @@ function sendOk() {
         return;
     }
     
+    str = f.link.value.trim();
+    if(!str) {
+        alert("기사 링크를 입력하세요.");
+        f.link.focus();
+        return;
+    }
+    
     var mode = "${mode}";
     if( (mode === "write") && (!f.selectFile.value) ) {
         alert("이미지 파일을 추가 하세요. ");

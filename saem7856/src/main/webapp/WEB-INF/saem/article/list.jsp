@@ -13,18 +13,25 @@
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
 <style type="text/css">
 .grid-box {
-	margin-top: 3px; margin-bottom: 5px;
+	margin-top: 3px; margin-bottom: 100px;
 	display: grid;
 	/* auto-fill :  남는 공간(빈 트랙)을 그대로 유지, minmax : '최소, 최대 크기'를 정의 */
-	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 	grid-column-gap: 10px;
-	grid-row-gap: 10px;
+	grid-row-gap: 100px;
 }
 .grid-box .item {
 	border: 1px solid #DAD9FF; height: 230px; cursor: pointer;
 }
 .item > img {
   width: 100%; height: 100%; cursor: pointer;
+}
+
+.subject-text {
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 </style>
 </head>
@@ -63,7 +70,13 @@
 						<div class="item" title="${dto.subject}"
 							onclick="location.href='${articleUrl}&num=${dto.num}';">
 							<img src="${pageContext.request.contextPath}/uploads/articlePhoto/${dto.imageFilename}">
+							<div class="subject-text">
+								${dto.subject}
 							</div>
+							<div>
+								${dto.reg_date}
+							</div>
+						</div>
 					</c:forEach>
 				</div>
 				
