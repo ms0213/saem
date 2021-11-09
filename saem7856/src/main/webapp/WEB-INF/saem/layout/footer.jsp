@@ -19,7 +19,7 @@
 			</header>
 			<ul>
 				<li><a href="${pageContext.request.contextPath}/">Homepage</a></li>
-				<li><a href="${pageContext.request.contextPath}/aboutUs.html">About us</a></li>
+				<li><a href="${pageContext.request.contextPath}/about.jsp">About us</a></li>
 				<li><a href="${pageContext.request.contextPath}/player/list.do">Players</a></li>
 				<li><span class="opener">News</span>
 					<ul>
@@ -51,4 +51,18 @@
 				</c:if>	
 			</ul>
 		</nav>
+		
+				<!-- Section -->
+		<section>
+			<header class="major">
+				<h2>Get in touch</h2>
+			</header>
+			<ul class="contact">
+				<li class="icon solid fa-envelope"><a href="#">saem7856@semi.com</a></li>
+				<li class="icon solid fa-phone">(000) 000-0000</li>
+				<li class="icon solid fa-home">서울특별시 마포구 서교동 447-5<br />
+					매일 00:00~24:00
+				</li>
+			</ul>
+		</section>
 	</div>
