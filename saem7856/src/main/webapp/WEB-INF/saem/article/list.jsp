@@ -16,7 +16,7 @@
 	margin-top: 3px; margin-bottom: 100px;
 	display: grid;
 	/* auto-fill :  남는 공간(빈 트랙)을 그대로 유지, minmax : '최소, 최대 크기'를 정의 */
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	grid-template-columns: repeat(5, minmax(220px, 1fr));
 	grid-column-gap: 10px;
 	grid-row-gap: 100px;
 }
