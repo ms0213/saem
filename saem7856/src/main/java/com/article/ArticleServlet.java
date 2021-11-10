@@ -2,6 +2,8 @@ package com.article;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+
+import org.json.JSONObject;
 
 import com.member.SessionInfo;
 
@@ -61,6 +65,8 @@ public class ArticleServlet extends MyUploadServlet{
 			updateSubmit(req, resp);
 		} else if (uri.indexOf("delete.do") != -1) {
 			delete(req, resp);
+		} else if (uri.indexOf("insertArticleLike.do") != -1) {
+			insertArticleLike(req, resp);
 		}
 	}
 	
@@ -173,6 +179,10 @@ public class ArticleServlet extends MyUploadServlet{
 	private void article(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 	// 게시물 보기
 		ArticleDAO dao = new ArticleDAO();
+		MyUtil util = new MyUtil();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
 		
 		String cp = req.getContextPath();
 		String page = req.getParameter("page");
@@ -189,8 +199,14 @@ public class ArticleServlet extends MyUploadServlet{
 				return;
 			}
 			
-			dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+			dto.setContent(util.htmlSymbols(dto.getContent()));
 			
+			
+			// 로그인 유저 좋아요 유무
+			boolean isUserLike = false;
+			if( info != null) {
+				dao.isUserArticleLike(num, info.getUserId());
+			}
 			// 이전글, 다음 글
 			ArticleDTO preReadDto = dao.preReadArticle(dto.getNum());
 			ArticleDTO nextReadDto = dao.nextReadArticle(dto.getNum());
@@ -200,6 +216,8 @@ public class ArticleServlet extends MyUploadServlet{
 			req.setAttribute("query", query);
 			req.setAttribute("preReadDto", preReadDto);
 			req.setAttribute("nextReadDto", nextReadDto);
+			
+			req.setAttribute("isUserLike", isUserLike);
 			
 			forward(req, resp, "/WEB-INF/saem/article/article.jsp");
 			return;
@@ -322,4 +340,41 @@ public class ArticleServlet extends MyUploadServlet{
 		
 	}
 	
+	private void insertArticleLike(HttpServletRequest req, HttpServletResponse resp) 
+		throws ServletException, IOException {
+		ArticleDAO dao = new ArticleDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+		
+		String state = "false";
+		int articleLikeCount = 0;
+		
+		try {
+			int num = Integer.parseInt(req.getParameter("num"));
+			String isNoLike = req.getParameter("isNoLike");
+			
+			if(isNoLike.equals("true")) {
+				dao.insertArticleLike(num, info.getUserId()); // 좋아요
+			} else {
+				dao.deleteArticleLike(num, info.getUserId()); // 좋아요 취소
+			}
+			
+			articleLikeCount = dao.countArticleLike(num);
+			
+			state = "true";
+		} catch (SQLException e) {
+			state = "liked";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		JSONObject job = new JSONObject();
+		job.put("state", state);
+		job.put("articleLikeCount", articleLikeCount);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
+	}
 }

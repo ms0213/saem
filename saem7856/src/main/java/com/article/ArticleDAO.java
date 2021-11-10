@@ -140,8 +140,14 @@ public class ArticleDAO {
 		String sql;
 		
 		try {
-			sql = "SELECT num, subject, content, reg_date, hitCount, imageFilename, link "
-					+ " FROM news WHERE num = ? ";
+			sql = "SELECT b.num, subject, content, reg_date, hitCount, imageFilename, link, "
+					+ " 	NVL(articleLikeCount, 0) articleLikeCount "
+					+ " FROM news b"
+					+ " LEFT OUTER JOIN ("
+					+ " 	SELECT num, COUNT(*) articleLikeCount FROM newsLike"
+					+ "		GROUP BY num"
+					+ " ) bc ON b.num = bc.num"
+					+ " WHERE b.num = ? ";
 			pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setInt(1, num);
@@ -157,6 +163,8 @@ public class ArticleDAO {
 				dto.setHitCount(rs.getString("hitCount"));
 				dto.setimageFilename(rs.getString("imageFilename"));
 				dto.setLink(rs.getString("link"));
+				
+				dto.setArticleLikeCount(rs.getInt("articleLikeCount"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -350,6 +358,134 @@ public class ArticleDAO {
 				}
 			}
 		}
+		return result;
+	}
+	
+	// 기사 좋아요 추가
+	public int insertArticleLike(int num, String userId) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "INSERT INTO newsLike(num, userId) VALUES (?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, num);
+			pstmt.setString(2, userId);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e2) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	// 기사 좋아요 삭제
+	public int deleteArticleLike(int num, String userId) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "DELETE FROM newsLike WHERE num = ? AND userId = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			pstmt.setString(2, userId);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
+		return result;
+	}
+
+	// 기사 좋아요 개수
+	public int countArticleLike(int num) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "SELECT NVL(COUNT(*), 0) FROM newsLike WHERE num =?";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, num);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	// 기사 좋아요 유무
+	public boolean isUserArticleLike(int num, String userId) {
+		boolean result = false;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "SELECT num, userId FROM newsLike WHERE num = ? AND userId = ?";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, num);
+			pstmt.setString(2, userId);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				result = true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (Exception e2) {
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
 		return result;
 	}
 }

@@ -9,6 +9,8 @@ public class ArticleDTO {
 	private String hitCount;
 	private String imageFilename;
 	
+	private int articleLikeCount;
+	
 	public int getNum() {
 		return num;
 	}
@@ -50,5 +52,11 @@ public class ArticleDTO {
 	}
 	public void setimageFilename(String imageFilename) {
 		this.imageFilename = imageFilename;
+	}
+	public int getArticleLikeCount() {
+		return articleLikeCount;
+	}
+	public void setArticleLikeCount(int articleLikeCount) {
+		this.articleLikeCount = articleLikeCount;
 	}
 }

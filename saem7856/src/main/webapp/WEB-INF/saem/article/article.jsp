@@ -13,8 +13,12 @@
 
 <style type="text/css">
 
+table tbody tr:nth-child(2n + 1) {
+	background-color: white;
+}
 
 img {display:block; margin:0px auto;}
+
 </style>
 <script type="text/javascript">
 <c:if test="${sessionScope.member.userId=='admin'}">
@@ -25,8 +29,87 @@ function deleteArticle() {
     	location.href = url;
     }
 }
+
 </c:if>
+
 </script>
+<script type="text/javascript">
+function login() {
+	location.href="${pageContext.request.contextPath}/member/login.do";
+}
+
+function ajaxFun(url, method, query, dataType, fn) {
+	$.ajax({
+		type:method,
+		url:url,
+		data:query,
+		dataType:dataType,
+		success:function(data) {
+			fn(data);
+		},
+		beforeSend:function(jqXHR) {
+			jqXHR.setRequestHeader("AJAX", true);
+		},
+		error:function(jqXHR) {
+			if(jqXHR.status === 403) {
+				login();
+				return false;
+			} else if(jqXHR.status === 405) {
+				alert("접근을 허용하지 않습니다.");
+				return false;
+			}
+	    	
+			console.log(jqXHR.responseText);
+		}
+	});
+}
+
+// 좋아요
+$(function(){
+	$(".btnSendArticleLike").click(function(){
+		var uid = "${empty sessionScope.member?'false':'true'}";
+		if(uid=="false") {
+			alert("로그인해라");
+			return false;
+		}
+		
+		var $i = $(this).find("i");
+		var isNoLike = $i.css("color") == "rgb(0, 0, 0)";
+		var msg = isNoLike ? "기사에 좋아요를 누르시겠습니까?" : "좋아요를 취소하시겠습니까?";
+		
+		if(! confirm( msg )) {
+			return false;
+		}
+		
+		
+		var url = "${pageContext.request.contextPath}/article/insertArticleLike.do";
+		var num = "${dto.num}";
+		// var query = {num:num, isNoLike:isNoLike};
+		var query = "num=" + num + "&isNoLike=" + isNoLike;;
+
+		var fn = function(data) {
+			var state = data.state;
+
+			if(state === "true") {
+				var color = "black";
+				if( isNoLike ) {
+					color = "#F56A6A";
+				}
+				$i.css("color", color);
+				
+				var count = data.articleLikeCount;
+				$("#articleLikeCount").text(count);
+			} else if(state === "liked") {
+				alert("좋아요는 한 번만 가능합니다.");
+			}
+		};
+		
+		ajaxFun(url, "post", query, "json", fn);
+	});
+});
+
+</script>
+
 </head>
 <body class="is-preload">
 
@@ -46,7 +129,7 @@ function deleteArticle() {
 					</div>
 					
 					<table class="table table-border table-article">
-						<tr>
+						<tr style="background-color:rgba(230, 235, 237, 0.25)">
 							<td colspan="2" align="center">
 								<b>${dto.subject}</b>
 							</td>
@@ -58,22 +141,27 @@ function deleteArticle() {
 							</td>
 						</tr>
 						
-						<tr style="background-color:white; border-bottom: none;">
+						<tr style="border-bottom: none;">
 							<td colspan="2" style="padding-bottom: 0; margin: 0 auto;">
 								<c:if test="${not empty dto.imageFilename}">
 								<img src="${pageContext.request.contextPath}/uploads/articlePhoto/${dto.imageFilename}">
 								</c:if>
 							</td>
 						</tr>
-						<tr style="background-color: white; border:0px;">
+						<tr style="border:none;">
 							<td colspan="2">
 								${dto.content}
 							</td>
 						</tr>
 						
+						<tr style="border:none">
+							<td colspan="2" align="center" style="padding-bottom: 20px;">
+								<button type="button" class="btn btnSendArticleLike" title="좋아요"><i class="fas fa-thumbs-up" style="color: ${isUserLike?'#F56A6A':'black'}"></i>&nbsp;&nbsp;<span id="articleLikeCount">${dto.articleLikeCount}</span></button>
+							</td>
+						</tr>
 						<tr>
 							<td colspan="2">
-								링&nbsp;&nbsp;&nbsp;크 : 
+								링&nbsp;&nbsp;&nbsp;크&nbsp;&nbsp;: 
 								<a href="${dto.link}">${dto.link}</a>
 							</td>
 						</tr>
@@ -96,7 +184,7 @@ function deleteArticle() {
 						</tr>
 					</table>				
 					<table>
-						<tr>
+						<tr style="border:none;">
 							<td style="float: left">
 								<c:choose>
 									<c:when test="${sessionScope.member.userId=='admin'}">

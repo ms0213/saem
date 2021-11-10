@@ -1,6 +1,7 @@
 package com.member;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -8,6 +9,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
 
 import saem.util.MyServlet;
 
@@ -185,10 +188,10 @@ public class MemberServlet extends MyServlet {
 			req.setAttribute("title", "회원정보수정");
 		} else {
 			req.setAttribute("mode", mode);
-			
-			forward(req, resp, "/WEB-INF/saem/member/pwd.jsp");
 		}
+		req.setAttribute("mode", mode);
 		
+		forward(req, resp, "/WEB-INF/saem/member/pwd.jsp");
 	}
 	
 	private void pwdSubmit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -257,9 +260,70 @@ public class MemberServlet extends MyServlet {
 	
 	private void updateSubmit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// 수정완료
+		MemberDAO dao = new MemberDAO();
+		HttpSession session = req.getSession();
+		
+		String cp = req.getContextPath();
+		if (req.getMethod().equalsIgnoreCase("GET")) {
+			resp.sendRedirect(cp + "/");
+			return;
+		}
+		
+		try {
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			if (info == null) {//로그아웃
+				resp.sendRedirect(cp+"/member/login.do");
+				return;
+			}
+			
+			MemberDTO dto = new MemberDTO();
+			
+			dto.setUserId(req.getParameter("userId"));
+			dto.setUserPwd(req.getParameter("userPwd"));
+			dto.setUserName(req.getParameter("userName"));
+			
+			String birth = req.getParameter("birth").replaceAll("(\\.|\\-|\\/)", "");
+			dto.setBirth(birth);
+
+			String email1 = req.getParameter("email1");
+			String email2 = req.getParameter("email2");
+			dto.setEmail(email1 + "@" + email2);
+
+			String tel1 = req.getParameter("tel1");
+			String tel2 = req.getParameter("tel2");
+			String tel3 = req.getParameter("tel3");
+			dto.setTel(tel1 + "-" + tel2 + "-" + tel3);
+
+			dto.setZip(req.getParameter("zip"));
+			dto.setAddr1(req.getParameter("addr1"));
+			dto.setAddr2(req.getParameter("addr2"));
+
+			dao.updateMember(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		resp.sendRedirect(cp+"/");
 	}
 	
 	private void userIdCheck(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 아이디 중복 검사
+		MemberDAO dao = new MemberDAO();
+		
+		String userId = req.getParameter("userId");
+		MemberDTO dto = dao.readMember(userId);
+		
+		String passed = "false";
+		if(dto == null) {
+			passed = "true";
+		}
+		
+		JSONObject job = new JSONObject();
+		job.put("passed", passed);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
 	}
 	
 
