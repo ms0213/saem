@@ -190,7 +190,7 @@ public class AnnounceDAO {
 		try {
 			sb.append(" SELECT * FROM ( ");
 			sb.append("     SELECT ROWNUM rnum, tb.* FROM ( ");
-			sb.append("         SELECT anum, subject, content ");
+			sb.append("         SELECT anum, subject, content, ");
 			sb.append("               hitCount, reg_date ");
 			sb.append("         FROM announce ");
 			if (condition.equals("all")) {

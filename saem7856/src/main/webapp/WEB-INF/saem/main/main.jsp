@@ -28,7 +28,7 @@
 
 				<!-- Banner -->
 				<section id="banner">
-					<video autoplay muted loop style="width: 50%; height: 500px;" class="content">
+					<video autoplay muted loop style="width: 100%; height: 100%;" class="content">
 						<!--크롬 자동 재생 정책으로 비디오 오디오 따로-->
 						<source src="./images/goal.mp4" type="video/webm">
 					</video>

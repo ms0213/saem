@@ -83,7 +83,7 @@ public class AnnounceServlet extends MyUploadServlet {
 
 			// 한페이지 표시할 데이터 개수
 			String numPerPage = req.getParameter("rows");
-			int rows = numPerPage == null ? 10 : Integer.parseInt(numPerPage);
+			int rows = numPerPage == null ? 5 : Integer.parseInt(numPerPage);
 
 			int dataCount, total_page;
 
@@ -184,7 +184,7 @@ public class AnnounceServlet extends MyUploadServlet {
 		String cp = req.getContextPath();
 		
 		if (req.getMethod().equalsIgnoreCase("GET")) {
-			resp.sendRedirect(cp + "/notice/list.do");
+			resp.sendRedirect(cp + "/announce/list.do");
 			return;
 		}
 		
@@ -194,7 +194,7 @@ public class AnnounceServlet extends MyUploadServlet {
 			return;
 		}
 
-		String rows = req.getParameter("rows");
+
 		try {
 			AnnounceDTO dto = new AnnounceDTO();
 			
@@ -205,7 +205,7 @@ public class AnnounceServlet extends MyUploadServlet {
 			e.printStackTrace();
 		}
 
-		resp.sendRedirect(cp + "/announce/list.do?rows=" + rows);
+		resp.sendRedirect(cp + "/announce/list.do");
 	}
 
 	protected void article(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

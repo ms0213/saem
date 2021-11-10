@@ -40,7 +40,7 @@ function deleteNotice() {
 				<header id="header">
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
-				<div class="body-container" style="width: 700px;">
+				<div class="body-container">
 		<div class="body-title">
 			<h3><i class="fas fa-clipboard-list"></i> 공지사항 </h3>
 		</div>
@@ -93,7 +93,7 @@ function deleteNotice() {
 							<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/announce/update.do?num=${dto.anum}&page=${page}&rows=${rows}';">수정</button>
 						</c:when>
 						<c:otherwise>
-							<button type="button" class="btn" disabled="disabled">수정</button>
+							<button type="button" class="btn" disabled="disabled" style="display: none;">수정</button>
 						</c:otherwise>
 					</c:choose>
 			    	
@@ -102,7 +102,7 @@ function deleteNotice() {
 			    			<button type="button" class="btn" onclick="deleteNotice();">삭제</button>
 			    		</c:when>
 			    		<c:otherwise>
-			    			<button type="button" class="btn" disabled="disabled">삭제</button>
+			    			<button type="button" class="btn" disabled="disabled" style="display: none;" >삭제</button>
 			    		</c:otherwise>
 			    	</c:choose>
 				</td>
