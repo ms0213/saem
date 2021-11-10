@@ -63,6 +63,16 @@
 					<div class="editor">${dto.content}</div>
 				</td>
 			</tr>
+			<tr>
+				<td colspan="2" valign="top" height="200" style="padding-top: 0;">
+					<div class="editor2">${dto.content2}</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" valign="top" height="200" style="padding-top: 0;">
+					<div class="editor3">${dto.content3}</div>
+				</td>
+			</tr>
 		</table>
 		
 		<table class="table">
@@ -98,6 +108,24 @@
 <script type="text/javascript">
 ClassicEditor
 	.create( document.querySelector( '.editor' ), {
+	})
+	.then( editor => {
+		window.editor = editor;
+		editor.isReadOnly = true;
+		editor.ui.view.top.remove( editor.ui.view.stickyPanel );
+	} );
+	
+ClassicEditor
+	.create( document.querySelector( '.editor2' ), {
+	})
+	.then( editor => {
+		window.editor = editor;
+		editor.isReadOnly = true;
+		editor.ui.view.top.remove( editor.ui.view.stickyPanel );
+	} );
+	
+ClassicEditor
+	.create( document.querySelector( '.editor3' ), {
 	})
 	.then( editor => {
 		window.editor = editor;

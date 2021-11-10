@@ -18,8 +18,8 @@ public class PlayerDAO {
 		String sql;
 
 		try {
-			sql = "INSERT INTO player (num, userId, subject, league, team, content, imageFilename, reg_date ) "
-					+ " VALUES (player_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, SYSDATE)";
+			sql = "INSERT INTO player (num, userId, subject, league, team, content, content2, content3, imageFilename, reg_date ) "
+					+ " VALUES (player_seq.NEXTVAL, ?, ?, ?, ?, ?, ?, ?, ?, SYSDATE)";
 			
 			pstmt = conn.prepareStatement(sql);
 
@@ -28,7 +28,9 @@ public class PlayerDAO {
 			pstmt.setString(3, dto.getLeague());
 			pstmt.setString(4, dto.getTeam());
 			pstmt.setString(5, dto.getContent());
-			pstmt.setString(6, dto.getImageFilename());
+			pstmt.setString(6, dto.getContent2());
+			pstmt.setString(7, dto.getContent3());
+			pstmt.setString(8, dto.getImageFilename());
 
 			result = pstmt.executeUpdate();
 
@@ -147,7 +149,7 @@ public class PlayerDAO {
 		String sql;
 
 		try {
-			sql = "SELECT num, p.userId, userName, subject, league, team, content, reg_date, imageFilename "
+			sql = "SELECT num, p.userId, userName, subject, league, team, content, content2, content3, reg_date, imageFilename "
 					+ " FROM player p "
 					+ " JOIN member1 m ON p.userId=m.userId  "
 					+ " WHERE num = ? ";
@@ -166,6 +168,8 @@ public class PlayerDAO {
 				dto.setLeague(rs.getString("league"));
 				dto.setTeam(rs.getString("team"));
 				dto.setContent(rs.getString("content"));
+				dto.setContent2(rs.getString("content2"));
+				dto.setContent3(rs.getString("content3"));
 				dto.setImageFilename(rs.getString("imageFilename"));
 				dto.setReg_date(rs.getString("reg_date"));
 			}
@@ -196,15 +200,17 @@ public class PlayerDAO {
 		String sql;
 
 		try {
-			sql = "UPDATE player SET subject=?, league=?, team=?, content=?, imageFilename=? WHERE num=?";
+			sql = "UPDATE player SET subject=?, league=?, team=?, content=?, content2=?, content3=?, imageFilename=? WHERE num=?";
 			pstmt = conn.prepareStatement(sql);
 
 			pstmt.setString(1, dto.getSubject());
 			pstmt.setString(2, dto.getLeague());
 			pstmt.setString(3, dto.getTeam());
 			pstmt.setString(4, dto.getContent());
-			pstmt.setString(5, dto.getImageFilename());
-			pstmt.setInt(6, dto.getNum());
+			pstmt.setString(5, dto.getContent2());
+			pstmt.setString(6, dto.getContent3());
+			pstmt.setString(7, dto.getImageFilename());
+			pstmt.setInt(8, dto.getNum());
 
 			result = pstmt.executeUpdate();
 		} catch (SQLException e) {

@@ -30,14 +30,14 @@ public class PlayerServlet extends MyUploadServlet {
 		req.setCharacterEncoding("utf-8");
 
 		String uri = req.getRequestURI();
-		String cp = req.getContextPath();
+//		String cp = req.getContextPath();
 
 		HttpSession session = req.getSession();
-		SessionInfo info = (SessionInfo) session.getAttribute("member");
-		if (info == null) { // 로그인 되지 않은 경우
-			resp.sendRedirect(cp + "/member/login.do");
-			return;
-		}
+//		SessionInfo info = (SessionInfo) session.getAttribute("member");
+//		if (info == null) { // 로그인 되지 않은 경우
+//			resp.sendRedirect(cp + "/member/login.do");
+//			return;
+//		}
 
 		// 이미지를 저장할 경로(pathname)
 		String root = session.getServletContext().getRealPath("/");
@@ -145,6 +145,8 @@ public class PlayerServlet extends MyUploadServlet {
 			dto.setLeague(req.getParameter("league"));
 			dto.setTeam(req.getParameter("team"));
 			dto.setContent(req.getParameter("content"));
+			dto.setContent2(req.getParameter("content2"));
+			dto.setContent3(req.getParameter("content3"));
 
 			String filename = null;
 			Part p = req.getPart("selectFile");
@@ -253,6 +255,8 @@ public class PlayerServlet extends MyUploadServlet {
 			dto.setLeague(req.getParameter("league"));
 			dto.setTeam(req.getParameter("team"));
 			dto.setContent(req.getParameter("content"));
+			dto.setContent2(req.getParameter("content2"));
+			dto.setContent3(req.getParameter("content3"));
 
 			String imageFilename = req.getParameter("imageFilename");
 			dto.setImageFilename(imageFilename);

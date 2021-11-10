@@ -46,35 +46,143 @@
 				<header id="header">
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
-			<main>
-	<div class="body-container" style="width: 800px;">
-		<div class="body-title">
-			<h3><i class="far fa-image"></i> 선수 정보 </h3>
-		</div>
-        
-		<table class="table">
-			<tr>
-				<td align="right">
-					<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/player/write.do';">선수 등록</button>
-				</td>
-			</tr>
-		</table>
-	
-		<div class="grid-box">
-			<c:forEach var="dto" items="${list}" varStatus="status">
-				<div class="item" title="${dto.subject}"
-					onclick="location.href='${articleUrl}&num=${dto.num}';">
-					<img src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
-					<p style="text-align: center;">${dto.subject}</p>
-					<p style="text-align: center;">${dto.team}</p>
-				</div>
-			</c:forEach>
-		</div>
-		
+				<main>
+
+					<div class="body-container" style="width: 800px;">
+						<div class="body-title">
+							<h3>
+								<i class="fas fa-futbol"></i> 선수 정보
+							</h3>
+						</div>
 
 
-	</div>
-</main>
+
+						<table class="table">
+							<tr>
+								<td align="left">EPL</td>
+
+							</tr>
+						</table>
+
+						<div class="grid-box"
+							style="padding-top: 5px; padding-bottom: 80px;">
+							<c:forEach var="dto" items="${list}" varStatus="status">
+								<c:if test="${dto.league=='EPL'}">
+									<div class="item" title="${dto.subject}"
+										onclick="location.href='${articleUrl}&num=${dto.num}';">
+										<img
+											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
+										<p style="text-align: center; height: 0;">${dto.subject}</p>
+										<p style="text-align: center; height: 0;">${dto.team}</p>
+									</div>
+								</c:if>
+							</c:forEach>
+						</div>
+						<table class="table" style="padding: 5px auto;">
+							<tr>
+								<td align="left">La Liga</td>
+							</tr>
+						</table>
+						<div class="grid-box"
+							style="padding-top: 5px; padding-bottom: 80px;">
+							<c:forEach var="dto" items="${list}" varStatus="status">
+								<c:if test="${dto.league=='La Liga'}">
+									<div class="item" title="${dto.subject}"
+										onclick="location.href='${articleUrl}&num=${dto.num}';">
+										<img
+											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
+										<p style="text-align: center; height: 0;">${dto.subject}</p>
+										<p style="text-align: center; height: 0;">${dto.team}</p>
+									</div>
+								</c:if>
+							</c:forEach>
+						</div>
+
+						<table class="table">
+							<tr>
+								<td align="left">분데스리가</td>
+							</tr>
+						</table>
+						<div class="grid-box"
+							style="padding-top: 5px; padding-bottom: 80px;">
+							<c:forEach var="dto" items="${list}" varStatus="status">
+								<c:if test="${dto.league=='분데스리가'}">
+									<div class="item" title="${dto.subject}"
+										onclick="location.href='${articleUrl}&num=${dto.num}';">
+										<img
+											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
+										<p style="text-align: center; height: 0;">${dto.subject}</p>
+										<p style="text-align: center; height: 0;">${dto.team}</p>
+									</div>
+								</c:if>
+							</c:forEach>
+						</div>
+
+						<table class="table">
+							<tr>
+								<td align="left">리그1</td>
+
+							</tr>
+						</table>
+						<div class="grid-box"
+							style="padding-top: 5px; padding-bottom: 80px;">
+							<c:forEach var="dto" items="${list}" varStatus="status">
+								<c:if test="${dto.league=='리그1'}">
+									<div class="item" title="${dto.subject}"
+										onclick="location.href='${articleUrl}&num=${dto.num}';">
+										<img
+											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
+										<p style="text-align: center; height: 0;">${dto.subject}</p>
+										<p style="text-align: center; height: 0;">${dto.team}</p>
+									</div>
+								</c:if>
+							</c:forEach>
+						</div>
+
+						<table class="table">
+							<tr>
+								<td align="left">러시아 프리미어리그</td>
+
+							</tr>
+						</table>
+						<div class="grid-box"
+							style="padding-top: 5px; padding-bottom: 80px;">
+							<c:forEach var="dto" items="${list}" varStatus="status">
+								<c:if test="${dto.league=='러시아 프리미어리그'}">
+									<div class="item" title="${dto.subject}"
+										onclick="location.href='${articleUrl}&num=${dto.num}';">
+										<img
+											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
+										<p style="text-align: center; height: 0;">${dto.subject}</p>
+										<p style="text-align: center; height: 0;">${dto.team}</p>
+									</div>
+								</c:if>
+							</c:forEach>
+						</div>
+
+						<table class="table">
+							<tr>
+								<td align="left">쉬페르리그</td>
+
+							</tr>
+						</table>
+						<div class="grid-box"
+							style="padding-top: 5px; padding-bottom: 80px;">
+							<c:forEach var="dto" items="${list}" varStatus="status">
+								<c:if test="${dto.league=='쉬페르리그'}">
+									<div class="item" title="${dto.subject}"
+										onclick="location.href='${articleUrl}&num=${dto.num}';">
+										<img
+											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
+										<p style="text-align: center; height: 0;">${dto.subject}</p>
+										<p style="text-align: center; height: 0;">${dto.team}</p>
+									</div>
+								</c:if>
+							</c:forEach>
+						</div>
+
+					</div>
+				</main>
 
 
 			</div>

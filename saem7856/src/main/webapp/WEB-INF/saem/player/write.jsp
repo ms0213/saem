@@ -80,7 +80,23 @@ function sendOk() {
         window.editor.focus();
         return;
     }
-	f.content.value = str;
+    f.content.value = str;
+    
+    str = window.editor2.getData().trim();
+    if(! str) {
+        alert("내용을 입력하세요. ");
+        window.editor2.focus();
+        return;
+    }
+	f.content2.value = str;
+	
+    str = window.editor3.getData().trim();
+    if(! str) {
+        alert("내용을 입력하세요. ");
+        window.editor3.focus();
+        return;
+    }
+	f.content3.value = str;
     
     var mode = "${mode}";
     if( (mode === "write") && (!f.selectFile.value) ) {
@@ -151,7 +167,7 @@ $(function(){
 					<div class="body-container" style="width: 700px;">
 						<div class="body-title">
 							<h3>
-								<i class="far fa-image"></i> 선수 등록
+								<i class="fas fa-futbol"></i> 선수 등록
 							</h3>
 						</div>
 
@@ -180,6 +196,22 @@ $(function(){
 									<td>
 										<div class="editor">${dto.content}</div> <input type="hidden"
 										name="content">
+									</td>
+								</tr>
+								
+								<tr>
+									<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용2</td>
+									<td>
+										<div class="editor2">${dto.content2}</div> <input type="hidden"
+										name="content2">
+									</td>
+								</tr>
+								
+								<tr>
+									<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용3</td>
+									<td>
+										<div class="editor3">${dto.content3}</div> <input type="hidden"
+										name="content3">
 									</td>
 								</tr>
 
@@ -259,6 +291,106 @@ $(function(){
 			})
 			.then( editor => {
 				window.editor = editor;
+			})
+			.catch( err => {
+				console.error( err.stack );
+			});
+		
+		ClassicEditor
+			.create( document.querySelector( '.editor2' ), {
+				fontFamily: {
+		            options: [
+		                'default',
+		                '맑은 고딕, Malgun Gothic, 돋움, sans-serif',
+		                '나눔고딕, NanumGothic, Arial'
+		            ]
+		        },
+		        fontSize: {
+		            options: [
+		                9, 11, 13, 'default', 17, 19, 21
+		            ]
+		        },
+				toolbar: {
+					items: [
+						'heading','|',
+						'fontFamily','fontSize','bold','italic','fontColor','|',
+						'alignment','bulletedList','numberedList','|',
+						'imageUpload','insertTable','sourceEditing','blockQuote','mediaEmbed','|',
+						'undo','redo','|',
+						'link','outdent','indent','|',
+					]
+				},
+				image: {
+		            toolbar: [
+		                'imageStyle:full',
+		                'imageStyle:side',
+		                '|',
+		                'imageTextAlternative'
+		            ],
+
+		            // The default value.
+		            styles: [
+		                'full',
+		                'side'
+		            ]
+		        },
+				language: 'ko',
+				ckfinder: {
+			        uploadUrl: '${pageContext.request.contextPath}/image/upload.do' // 업로드 url (post로 요청 감)
+			    }
+			})
+			.then( editor => {
+				window.editor2 = editor;
+			})
+			.catch( err => {
+				console.error( err.stack );
+			});
+		
+		ClassicEditor
+			.create( document.querySelector( '.editor3' ), {
+				fontFamily: {
+		            options: [
+		                'default',
+		                '맑은 고딕, Malgun Gothic, 돋움, sans-serif',
+		                '나눔고딕, NanumGothic, Arial'
+		            ]
+		        },
+		        fontSize: {
+		            options: [
+		                9, 11, 13, 'default', 17, 19, 21
+		            ]
+		        },
+				toolbar: {
+					items: [
+						'heading','|',
+						'fontFamily','fontSize','bold','italic','fontColor','|',
+						'alignment','bulletedList','numberedList','|',
+						'imageUpload','insertTable','sourceEditing','blockQuote','mediaEmbed','|',
+						'undo','redo','|',
+						'link','outdent','indent','|',
+					]
+				},
+				image: {
+		            toolbar: [
+		                'imageStyle:full',
+		                'imageStyle:side',
+		                '|',
+		                'imageTextAlternative'
+		            ],
+
+		            // The default value.
+		            styles: [
+		                'full',
+		                'side'
+		            ]
+		        },
+				language: 'ko',
+				ckfinder: {
+			        uploadUrl: '${pageContext.request.contextPath}/image/upload.do' // 업로드 url (post로 요청 감)
+			    }
+			})
+			.then( editor => {
+				window.editor3 = editor;
 			})
 			.catch( err => {
 				console.error( err.stack );
