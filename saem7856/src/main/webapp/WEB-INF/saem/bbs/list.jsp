@@ -164,7 +164,7 @@ function searchList() {
 			<h3><i class="fas fa-chalkboard"></i> 자유 게시판 </h3>
 		</div>
         
-		<table class="table">
+		<table >
 			<tr>
 				<td width="50%">
 					${dataCount}개(${page}/${total_page} 페이지)
@@ -200,6 +200,7 @@ function searchList() {
 					<td>${dto.listNum}</td>
 					<td class="left">
 						<a href="${articleUrl}&num=${dto.num}">${dto.subject}</a>
+						<c:if test="${dto.replyCount!=0}">(${dto.replyCount})</c:if>
 					</td>
 					<td>${dto.userName}</td>
 					<td>${dto.reg_date}</td>

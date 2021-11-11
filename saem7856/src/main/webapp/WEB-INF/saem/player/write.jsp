@@ -12,21 +12,18 @@
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
 <style type="text/css">
 .table-form td {
-	padding: 7px 0;
-}
-
-.table-form p {
-	line-height: 200%;
+	padding: 7px;
 }
 
 .table-form tr>td:first-child {
-	width: 110px;
+	min-width: 110px;
 	text-align: center;
 	background: #eee;
 }
 
 .table-form tr>td:nth-child(2) {
 	padding-left: 10px;
+	max-width: 500px;
 }
 
 .table-form input[type=text], .table-form input[type=file], .table-form textarea
@@ -164,7 +161,7 @@ $(function(){
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 				<main>
-					<div class="body-container" style="width: 700px;">
+					<div class="body-container">
 						<div class="body-title">
 							<h3>
 								<i class="fas fa-futbol"></i> 선수 등록
@@ -174,6 +171,10 @@ $(function(){
 						<form name="playerForm" method="post"
 							enctype="multipart/form-data">
 							<table class="table table-border table-form">
+								<colgroup>
+									<col width="15%" />
+									<col width="85%" />
+								</colgroup>
 								<tr>
 									<td>선수&nbsp;&nbsp;&nbsp;&nbsp;이름</td>
 									<td><input type="text" name="subject" maxlength="100"
@@ -192,26 +193,26 @@ $(function(){
 								</tr>
 
 								<tr>
-									<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용</td>
+									<td valign="top">선수&nbsp;&nbsp;&nbsp;&nbsp;프로필</td>
 									<td>
 										<div class="editor">${dto.content}</div> <input type="hidden"
 										name="content">
 									</td>
 								</tr>
-								
+
 								<tr>
-									<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용2</td>
+									<td valign="top">선수&nbsp;&nbsp;&nbsp;&nbsp;정보</td>
 									<td>
-										<div class="editor2">${dto.content2}</div> <input type="hidden"
-										name="content2">
+										<div class="editor2">${dto.content2}</div> <input
+										type="hidden" name="content2">
 									</td>
 								</tr>
-								
+
 								<tr>
-									<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용3</td>
+									<td valign="top">리그&nbsp;&nbsp;&nbsp;&nbsp;순위표</td>
 									<td>
-										<div class="editor3">${dto.content3}</div> <input type="hidden"
-										name="content3">
+										<div class="editor3">${dto.content3}</div> <input
+										type="hidden" name="content3">
 									</td>
 								</tr>
 

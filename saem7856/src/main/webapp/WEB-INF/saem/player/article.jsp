@@ -12,7 +12,10 @@
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
 <style type="text/css">
 .table-article tr > td {
-	padding-left: 5px; padding-right: 5px;
+	padding-left: 5px; padding-right: 5px; vertical-align: top;
+}
+.table-article tr > td div {
+	height: 100% !important;
 }
 .table-article .img {
 	max-width:100%; height:auto; resize:both;
@@ -45,12 +48,17 @@
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 <main>
-	<div class="body-container" style="width: 700px;">
+	<div class="body-container">
 		<div class="body-title">
-			<h3><i class="far fa-image"></i> 선수 정보 </h3>
+			<h3><i class="fas fa-futbol"></i> 선수 정보 </h3>
 		</div>
         
 		<table class="table table-border table-article">
+			<colgroup>
+				<col width="30%" />
+				<col width="70%" />
+			</colgroup>
+		
 			<tr>
 				<td colspan="2" align="center">
 					${dto.subject}
@@ -59,17 +67,16 @@
 			
 
 			<tr>
-				<td colspan="2" valign="top" height="200" style="padding-top: 0;">
+				<td style="padding-top: 0;">
 					<div class="editor">${dto.content}</div>
 				</td>
-			</tr>
-			<tr>
-				<td colspan="2" valign="top" height="200" style="padding-top: 0;">
+			
+				<td style="padding-top: 0;">
 					<div class="editor2">${dto.content2}</div>
 				</td>
 			</tr>
 			<tr>
-				<td colspan="2" valign="top" height="200" style="padding-top: 0;">
+				<td colspan="2" style="padding-top: 0;">
 					<div class="editor3">${dto.content3}</div>
 				</td>
 			</tr>
@@ -97,7 +104,7 @@
 			    	</c:choose>
 				</td>
 				<td align="right">
-					<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/player/list.do?page=${page}';">리스트</button>
+					<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/player/list.do?page=${page}';">선수목록</button>
 				</td>
 			</tr>
 		</table>

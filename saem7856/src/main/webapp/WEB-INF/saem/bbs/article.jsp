@@ -527,7 +527,7 @@ $(function(){
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 				<main>
-	<div class="body-container" style="width: 700px;">
+	<div class="body-container">
 		<div class="body-title">
 			<h3><i class="fas fa-chalkboard"></i> 게시판 </h3>
 		</div>
