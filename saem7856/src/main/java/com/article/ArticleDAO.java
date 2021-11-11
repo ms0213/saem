@@ -79,6 +79,56 @@ public class ArticleDAO {
 		return result;
 	}
 	
+	// 검색해서 데이터 개수
+	public int DataCount(String condition, String keyword) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		ResultSet rs = null;
+		
+		try {
+			sql = "SELECT NVL(COUNT(*),0) FROM news ";
+			if(condition.equals("all")) {
+				sql += "  WHERE INSTR(subject, ?) >= 1 OR INSTR (content, ?) >= 1 ";
+			} else if (condition.equals("reg_date")) {
+				keyword = keyword.replaceAll("(\\-|\\/|\\.)", "");
+				sql += " WHERE TO_CHAR(reg_date, 'YYYYMMDD') =? ";
+			} else {
+				sql += " WHERE INSTR(" + condition + ", ?) >=1 ";
+			}
+			
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setString(1, keyword);
+			if(condition.equals("all")) {
+				pstmt.setString(2, keyword);
+			}
+			
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if (rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+			
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
 	public List<ArticleDTO> listArticle(int start, int end)  {
 		List<ArticleDTO> list = new ArrayList<ArticleDTO>();
 		PreparedStatement pstmt = null;
@@ -129,6 +179,79 @@ public class ArticleDAO {
 				}
 			}
 		}
+		return list;
+	}
+	
+	// 게시물 검색 시 리스트
+	public List<ArticleDTO> listArticle(int start, int end, String condition, String keyword) {
+		List<ArticleDTO> list = new ArrayList<ArticleDTO>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		StringBuilder sb = new StringBuilder();
+		
+		try {
+			sb.append(" SELECT * FROM ( ");
+			sb.append("		SELECT ROWNUM rnum, tb.* FROM ( ");
+			sb.append("			SELECT num, subject, content, link, TO_CHAR(reg_date, 'YYYY-MM-DD') reg_date, ");
+			sb.append(" 			hitCount, imageFilename ");
+			sb.append("			FROM news");
+			if(condition.equals("all")) {
+				sb.append("	WHERE INSTR(subject, ?) >= 1 OR INSTR(content,?) >= 1  ");
+			} else if ( condition.equals("reg_date")) {
+				keyword = keyword.replaceAll("(\\-|\\/|\\.)", "");
+				sb.append("	WHERE TO_CHAR(reg_date, 'YYYYMMDD') = ? ");
+			} else {
+				sb.append("	WHERE INSTR(" + condition + ", ?) >= 1 ");
+			}
+			sb.append("			ORDER BY num DESC ");
+			sb.append("		) tb WHERE ROWNUM <= ? ");
+			sb.append("	) WHERE rnum >= ? ");
+			
+			pstmt = conn.prepareStatement(sb.toString());
+			
+			if(condition.equals("all")) {
+				pstmt.setString(1, keyword);
+				pstmt.setString(2, keyword);
+				pstmt.setInt(3, end);
+				pstmt.setInt(4, start);
+			} else {
+				pstmt.setString(1, keyword);
+				pstmt.setInt(2, end);
+				pstmt.setInt(3, start);
+			}
+			
+			rs = pstmt.executeQuery();
+			while(rs.next()) {
+				ArticleDTO dto = new ArticleDTO();
+				
+				dto.setNum(rs.getInt("num"));
+				dto.setSubject(rs.getString("subject"));
+				dto.setContent(rs.getString("content"));
+				dto.setLink(rs.getString("link"));
+				dto.setReg_date(rs.getString("reg_date"));
+				dto.setHitCount(rs.getString("hitCount"));
+				dto.setimageFilename(rs.getString("imageFilename"));
+				
+				list.add(dto);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if ( rs != null ) {
+				try {
+					rs.close();
+				} catch (SQLException e2) {
+				}
+			}
+			
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e2) {
+				}
+			}
+		}
+		
 		return list;
 	}
 	
@@ -187,36 +310,63 @@ public class ArticleDAO {
 		return dto;
 	}
 	
-	public ArticleDTO preReadArticle(int num) {
+	public ArticleDTO preReadArticle(int num, String condition, String keyword) {
 		ArticleDTO dto = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		StringBuilder sb = new StringBuilder();
 		
 		try {
-			sb.append(" SELECT * FROM ( ");
-			sb.append("		SELECT num, subject FROM news ");
-			sb.append("		WHERE num > ? ");
-			sb.append("		ORDER BY num ASC ");
-			sb.append("	)	WHERE rownum = 1");
-			
-			pstmt = conn.prepareStatement(sb.toString());
-			
-			pstmt.setInt(1, num);
+			if (keyword != null && keyword.length() != 0) {
+				sb.append(" SELECT * FROM ( ");
+				sb.append("		SELECT num, subject FROM news ");
+				sb.append("		WHERE ( num > ? ) ");
+				if (condition.equals("all")) {
+					sb.append("		AND ( INSTR(subject, ?) >= 1 OR INSTR(content, ?) >= 1) ");
+				} else if (condition.equals("reg_date")) {
+					keyword = keyword.replaceAll("(\\-|\\/|\\.)", "");
+					sb.append("   AND ( TO_CHAR(reg_date, 'YYYYMMDD') = ? ) ");
+				} else {
+					sb.append("   AND ( INSTR(" + condition + ", ?) >= 1 ) ");
+				}
+				sb.append("     ORDER BY num ASC ");
+				sb.append(" ) WHERE ROWNUM = 1 ");
+				
+				pstmt = conn.prepareStatement(sb.toString());
+				
+				pstmt.setInt(1, num);
+				pstmt.setString(2, keyword);
+				if (condition.equals("all")) {
+					pstmt.setString(3, keyword);
+				}
+			} else {
+				sb.append(" SELECT * FROM ( ");
+				sb.append("		SELECT num, subject FROM news ");
+				sb.append("		WHERE num > ? ");
+				sb.append("		ORDER BY num ASC ");
+				sb.append("	)	WHERE rownum = 1");
+				
+				pstmt = conn.prepareStatement(sb.toString());
+				pstmt.setInt(1, num);
+			}
 			
 			rs = pstmt.executeQuery();
+			
 			if(rs.next()) {
 				dto = new ArticleDTO();
 				dto.setNum(rs.getInt("num"));
 				dto.setSubject(rs.getString("subject"));
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
 			if(rs != null) {
 				try {
 					rs.close();
 				} catch (SQLException e2) {
 				}
 			}
+			
 			if(pstmt != null) {
 				try {
 					pstmt.close();
@@ -227,13 +377,37 @@ public class ArticleDAO {
 		return dto;
 	}
 	
-	public ArticleDTO nextReadArticle(int num) {
+	public ArticleDTO nextReadArticle(int num, String condition, String keyword) {
 		ArticleDTO dto = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		StringBuilder sb = new StringBuilder();
 		
 		try {
+			if(keyword != null && keyword.length()!=0) {
+				sb.append(" SELECT * FROM ( ");
+				sb.append("		SELECT num, subject FROM news ");
+				sb.append("		WHERE ( num < ? ) ");
+				if(condition.equals("all")) {
+					sb.append(" AND ( INSTR(subject, ?) >= 1 OR INSTR(content, ?) >= 1 ) ");
+				} else if (condition.equals("reg_date")) {
+					keyword = keyword.replaceAll("(\\-|\\/|\\.)", "");
+					sb.append("   AND ( TO_CHAR(reg_date, 'YYYYMMDD') = ? ) ");
+				} else {
+					sb.append("   AND ( INSTR(" + condition + ", ?) >= 1 ) ");
+				}
+				sb.append("     ORDER BY num DESC ");
+				sb.append(" ) WHERE ROWNUM = 1 ");
+				
+				pstmt = conn.prepareStatement(sb.toString());
+				
+				pstmt.setInt(1, num);
+				pstmt.setString(2, keyword);
+				if(condition.equals("all")) {
+					pstmt.setString(3, keyword);
+				}
+			} else {
+				
 			sb.append(" SELECT * FROM ( ");
 			sb.append(" 	SELECT num, subject FROM news ");
 			sb.append(" 	WHERE num < ? ");
@@ -241,8 +415,8 @@ public class ArticleDAO {
 			sb.append(" ) WHERE ROWNUM = 1 ");
 			
 			pstmt = conn.prepareStatement(sb.toString());
-			
 			pstmt.setInt(1, num);
+			}
 			
 			rs = pstmt.executeQuery();
 			

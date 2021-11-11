@@ -12,6 +12,12 @@
 <link rel="stylesheet" href="assets/css/main.css" />
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
 <style type="text/css">
+.search_wrapper {
+	display: flex;
+	align-items: center;
+	margin: 0;
+	min-width: 350px;
+}
 .grid-box {
 	margin-top: 3px; margin-bottom: 100px;
 	display: grid;
@@ -35,6 +41,14 @@
   text-align: center;
 }
 </style>
+<script type="text/javascript">
+function searchList() {
+	if(event.keyCode==13){
+		var f = document.searchForm;
+		f.submit();
+	}
+}
+</script>
 </head>
 <body class="is-preload">
 
@@ -58,10 +72,23 @@
 						<td width="50%">
 							${dataCount}개(${page}/${total_page} 페이지)
 						</td>
+							<!-- search -->
 						<td align="right">
-							<c:if test="${sessionScope.member.userId == 'admin'}">
-							<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/article/write.do';"> 기사올리기 </button>
-							</c:if>
+							<section id ="search" class="alt">
+								<form method="post" class="search_wrapper" 
+								name="searchForm" action="${pageContext.request.contextPath}/article/list.do">
+									<select name="condition" class="selectField" style="width:60%">
+										<option value = "all" ${condition=="all"?"selected='selected'":"" }>제목+내용</option>
+										<option value = "reg_date" ${condition=="reg_date"?"selected='selected'":""}>등록일</option>
+										<option value = "subject" ${condition=="subject"?"selected='selected'":""}>제목</option>
+										<option value = "content" ${condition=="content"?"selected='selected'":""}>내용</option>
+									</select>
+									<input type="text" name="keyword" value="${keyword}" placeholder="Search" onkeyup=" searchList();"/>
+								</form>
+							</section>
+							<input type="hidden" name="page" value="${page}">
+							<input type="hidden" name="condition" value="${condition}">
+							<input type="hidden" name="keyword" value="${keyword}">
 						</td>
 					</tr>
 				</table>
