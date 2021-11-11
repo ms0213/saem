@@ -191,7 +191,7 @@
 
 	// 게시글 공감
 	$(function() {
-		$(".btnSendPhotoLike")
+		$(".btnSendReviewLike")
 				.click(
 						function() {
 							var isNoLike = $(this).find("i").css("color") == "rgb(0, 0, 0)";
@@ -216,7 +216,7 @@
 									}
 									$i.css("color", color);
 									var count = data.reviewLikeCount;
-									$("#photoLikeCount").text(count);
+									$("#reviewLikeCount").text(count);
 								} else if (state === "failLike") {
 									alert("공감은 게시글 당 한 번만 가능합니다.")
 								}
@@ -480,10 +480,10 @@
 									<p style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
 									<p >${dto.content}</p>
 									<p align="center">
-										<button type="button" class="btn btnSendPhotoLike" title="좋아요">
+										<button type="button" class="btn btnSendReviewLike" title="좋아요">
 											<i class="fas fa-thumbs-up"
 												style="color: ${isUserLike?'blue':'black'}"></i>&nbsp;&nbsp;<span
-												id="photoLikeCount">${dto.reviewLikeCount}</span>
+												id="reviewLikeCount">${dto.reviewLikeCount}</span>
 										</button>
 									</p>
 								</td>

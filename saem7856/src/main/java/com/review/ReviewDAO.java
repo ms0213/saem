@@ -247,7 +247,7 @@ public class ReviewDAO {
 				sb.append("     where instr(" + condition + ", ?) >= 1 ");
 			}
 			sb.append("			left outer join ( ");
-			sb.append("				select num, count(*) replyCount from photoReply where answer = 0 ");
+			sb.append("				select num, count(*) replyCount from reviewReply where answer = 0 ");
 			sb.append("				group by num ");
 			sb.append("			) c on r.num = c.num");
 			sb.append("         order by num desc ");
