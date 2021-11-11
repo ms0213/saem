@@ -36,7 +36,6 @@
 }
 
 .img-box {
-	max-width: 1140px;
 	padding: 5px;
 	box-sizing: border-box;
 	border: 1px solid #ccc;
@@ -47,8 +46,8 @@
 }
 
 .img-box img {
-	width: 100px;
-	height: 100px;
+	width: 200px;
+	height: 200px;
 	margin-right: 5px;
 	flex: 0 0 auto;
 	cursor: pointer;
@@ -99,13 +98,8 @@ function imageViewer(img) {
 
 				<!-- Section -->
 				<div class="title" style="margin: 30px 0 30px 0">
-					<h1>굿즈 게시판</h1>
+					<h1><i class="far fa-image"></i> 굿즈 소개</h1>
 					<div class="title" style="margin: 30px 0 30px 0">
-						<div class="body-title">
-							<h3>
-								<i class="far fa-image"></i> 굿즈 사진
-							</h3>
-						</div>
 
 						<table class="table table-border table-article">
 							<tr>
@@ -149,8 +143,6 @@ function imageViewer(img) {
 									</c:if>
 								</td>
 							</tr>
-						</table>
-						<table class="table">
 							<tr>
 								<td width="50%"><c:choose>
 										<c:when test="${sessionScope.member.userId=='admin'}">
