@@ -1,19 +1,24 @@
 package com.bbs;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 //import java.text.SimpleDateFormat;
 //import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
 
 import com.member.SessionInfo;
 
@@ -59,6 +64,36 @@ public class BoardServlet extends MyServlet {
 			noticeForm(req, resp);
 		} else if (uri.indexOf("notice_ok.do") != -1) {
 			noticeSubmit(req, resp);
+		} else if (uri.indexOf("insertBoardLike.do") != -1) {
+			// 게시물 공감 저장
+			insertBoardLike(req, resp);
+		} else if (uri.indexOf("insertReply.do") != -1) {
+			// 댓글 추가
+			insertReply(req, resp);
+		} else if (uri.indexOf("listReply.do") != -1) {
+			// 댓글 리스트
+			listReply(req, resp);
+		} else if (uri.indexOf("deleteReply.do") != -1) {
+			// 댓글 삭제
+			deleteReply(req, resp);
+		} else if (uri.indexOf("insertReplyLike.do") != -1) {
+			// 댓글 좋아요/싫어요 추가
+			insertReplyLike(req, resp);
+		} else if (uri.indexOf("countReplyLike.do") != -1) {
+			// 댓글 좋아요/싫어요 개수
+			countReplyLike(req, resp);
+		} else if (uri.indexOf("insertReplyAnswer.do") != -1) {
+			// 댓글의 답글 추가
+			insertReplyAnswer(req, resp);
+		} else if (uri.indexOf("listReplyAnswer.do") != -1) {
+			// 댓글의 답글 리스트
+			listReplyAnswer(req, resp);
+		} else if (uri.indexOf("deleteReplyAnswer.do") != -1) {
+			// 댓글의 답글 삭제
+			deleteReplyAnswer(req, resp);
+		} else if (uri.indexOf("countReplyAnswer.do") != -1) {
+			// 댓글의 답글 개수
+			countReplyAnswer(req, resp);
 		}
 	}
 
@@ -258,6 +293,9 @@ public class BoardServlet extends MyServlet {
 		BoardDAO dao = new BoardDAO();
 		MyUtil util = new MyUtil();
 		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
+		
 		String cp = req.getContextPath();
 		
 		String page = req.getParameter("page");
@@ -287,6 +325,9 @@ public class BoardServlet extends MyServlet {
 				return;
 			}
 			dto.setContent(util.htmlSymbols(dto.getContent()));
+			
+			// 로그인 유저의 게시글 공감 유무
+			boolean isUserLike = dao.isUserBoardLike(num, info.getUserId()); 
 
 			// 이전글 다음글
 			BoardDTO preReadDto = dao.preReadBoard(dto.getNum(), condition, keyword);
@@ -298,6 +339,8 @@ public class BoardServlet extends MyServlet {
 			req.setAttribute("query", query);
 			req.setAttribute("preReadDto", preReadDto);
 			req.setAttribute("nextReadDto", nextReadDto);
+			
+			req.setAttribute("isUserLike", isUserLike);
 
 			// 포워딩
 			forward(req, resp, "/WEB-INF/saem/bbs/article.jsp");
@@ -412,4 +455,299 @@ public class BoardServlet extends MyServlet {
 
 		resp.sendRedirect(cp + "/bbs/list.do?" + query);
 	}
-}
+	
+	// 게시물 공감 저장 - AJAX:JSON
+		private void insertBoardLike(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+
+			HttpSession session = req.getSession();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+
+			String state = "false";
+			int boardLikeCount = 0;
+
+			try {
+				int num = Integer.parseInt(req.getParameter("num"));
+				String isNoLike = req.getParameter("isNoLike");
+				
+				if(isNoLike.equals("true")) {
+					dao.insertBoardLike(num, info.getUserId()); // 공감
+				} else {
+					dao.deleteBoardLike(num, info.getUserId()); // 공감 취소
+				}
+				
+				boardLikeCount = dao.countBoardLike(num);
+
+				state = "true";
+			} catch (SQLException e) {
+				state = "liked";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			JSONObject job = new JSONObject();
+			job.put("state", state);
+			job.put("boardLikeCount", boardLikeCount);
+
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out = resp.getWriter();
+			out.print(job.toString());
+		}
+
+		// 리플 리스트 - AJAX:TEXT
+		private void listReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+			MyUtil util = new MyUtil();
+
+			try {
+				int num = Integer.parseInt(req.getParameter("num"));
+				String pageNo = req.getParameter("pageNo");
+				int current_page = 1;
+				if (pageNo != null)
+					current_page = Integer.parseInt(pageNo);
+
+				int rows = 5;
+				int total_page = 0;
+				int replyCount = 0;
+
+				replyCount = dao.dataCountReply(num);
+				total_page = util.pageCount(rows, replyCount);
+				if (current_page > total_page) {
+					current_page = total_page;
+				}
+
+				int start = (current_page - 1) * rows + 1;
+				int end = current_page * rows;
+
+				// 리스트에 출력할 데이터
+				List<ReplyDTO> listReply = dao.listReply(num, start, end);
+
+				// 엔터를 <br>
+				for (ReplyDTO dto : listReply) {
+					dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+				}
+
+				// 페이징 처리 : AJAX 용 - listPage : 자바스크립트 함수명
+				String paging = util.pagingMethod(current_page, total_page, "listPage");
+
+				req.setAttribute("listReply", listReply);
+				req.setAttribute("pageNo", current_page);
+				req.setAttribute("replyCount", replyCount);
+				req.setAttribute("total_page", total_page);
+				req.setAttribute("paging", paging);
+				
+				forward(req, resp, "/WEB-INF/saem/bbs/listReply.jsp");
+				return;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			resp.sendError(405);
+			
+		}
+
+		// 리플 또는 답글 저장 - AJAX:JSON
+		private void insertReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+
+			HttpSession session = req.getSession();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			String state = "false";
+			try {
+				ReplyDTO dto = new ReplyDTO();
+
+				int num = Integer.parseInt(req.getParameter("num"));
+				dto.setNum(num);
+				dto.setUserId(info.getUserId());
+				dto.setContent(req.getParameter("content"));
+				String answer = req.getParameter("answer");
+				if (answer != null) {
+					dto.setAnswer(Integer.parseInt(answer));
+				}
+				
+				dao.insertReply(dto);
+				
+				state = "true";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			JSONObject job = new JSONObject();
+			job.put("state", state);
+
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out = resp.getWriter();
+			out.print(job.toString());
+		}
+
+		// 리플 또는 답글 삭제 - AJAX:JSON
+		private void deleteReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+
+			HttpSession session = req.getSession();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			String state = "false";
+
+			try {
+				int replyNum = Integer.parseInt(req.getParameter("replyNum"));
+
+				dao.deleteReply(replyNum, info.getUserId());
+				
+				state = "true";
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			JSONObject job = new JSONObject();
+			job.put("state", state);
+
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out = resp.getWriter();
+			out.print(job.toString());
+		}
+
+		// 댓글 좋아요 / 싫어요 저장 - AJAX:JSON
+		private void insertReplyLike(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+
+			HttpSession session = req.getSession();
+			SessionInfo info = (SessionInfo) session.getAttribute("member");
+			
+			String state = "false";
+			int likeCount = 0;
+			int disLikeCount = 0;
+
+			try {
+				int replyNum = Integer.parseInt(req.getParameter("replyNum"));
+				int replyLike = Integer.parseInt(req.getParameter("replyLike"));
+
+				ReplyDTO dto = new ReplyDTO();
+
+				dto.setReplyNum(replyNum);
+				dto.setUserId(info.getUserId());
+				dto.setReplyLike(replyLike);
+
+				dao.insertReplyLike(dto);
+
+				Map<String, Integer> map = dao.countReplyLike(replyNum);
+
+				if (map.containsKey("likeCount")) {
+					likeCount = map.get("likeCount");
+				}
+
+				if (map.containsKey("disLikeCount")) {
+					disLikeCount = map.get("disLikeCount");
+				}
+
+				state = "true";
+			} catch (SQLException e) {
+				if(e.getErrorCode() == 1) {
+					state = "liked";
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			JSONObject job = new JSONObject();
+			job.put("state", state);
+			job.put("likeCount", likeCount);
+			job.put("disLikeCount", disLikeCount);
+
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out = resp.getWriter();
+			out.print(job.toString());
+		}
+
+		// 댓글 좋아요 / 싫어요 개수 - AJAX:JSON
+		private void countReplyLike(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+
+			int likeCount = 0;
+			int disLikeCount = 0;
+
+			try {
+				int replyNum = Integer.parseInt(req.getParameter("replyNum"));
+				Map<String, Integer> map = dao.countReplyLike(replyNum);
+
+				if (map.containsKey("likeCount")) {
+					likeCount = map.get("likeCount");
+				}
+
+				if (map.containsKey("disLikeCount")) {
+					disLikeCount = map.get("disLikeCount");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			JSONObject job = new JSONObject();
+			job.put("likeCount", likeCount);
+			job.put("disLikeCount", disLikeCount);
+
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out = resp.getWriter();
+			out.print(job.toString());
+		}
+
+		// 답글 저장 - AJAX:JSON
+		private void insertReplyAnswer(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException {
+			insertReply(req, resp);
+		}
+
+		// 리플의 답글 리스트 - AJAX:TEXT
+		private void listReplyAnswer(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+
+			try {
+				int answer = Integer.parseInt(req.getParameter("answer"));
+
+				List<ReplyDTO> listReplyAnswer = dao.listReplyAnswer(answer);
+
+				// 엔터를 <br>(스타일 => style="white-space:pre;")
+				for (ReplyDTO dto : listReplyAnswer) {
+					dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+				}
+
+				req.setAttribute("listReplyAnswer", listReplyAnswer);
+
+				forward(req, resp, "/WEB-INF/saem/bbs/listReplyAnswer.jsp");
+				return;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			resp.sendError(405);
+		}
+
+		// 리플 답글 삭제 - AJAX:JSON
+		private void deleteReplyAnswer(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException {
+			deleteReply(req, resp);
+		}
+
+		// 리플의 답글 개수 - AJAX:JSON
+		private void countReplyAnswer(HttpServletRequest req, HttpServletResponse resp)
+				throws ServletException, IOException {
+			BoardDAO dao = new BoardDAO();
+			int count = 0;
+
+			try {
+				int answer = Integer.parseInt(req.getParameter("answer"));
+				count = dao.dataCountReplyAnswer(answer);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			JSONObject job = new JSONObject();
+			job.put("count", count);
+
+			resp.setContentType("text/html;charset=utf-8");
+			PrintWriter out = resp.getWriter();
+			out.print(job.toString());
+		}
+	}

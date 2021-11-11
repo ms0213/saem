@@ -159,7 +159,7 @@ function searchList() {
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 				<main>
-	<div class="body-container" style="width: 1100px; padding-top: 30px;">
+	<div class="body-container" style="padding-top: 30px;">
 		<div class="body-title">
 			<h3><i class="fas fa-chalkboard"></i> 자유 게시판 </h3>
 		</div>
@@ -187,6 +187,7 @@ function searchList() {
 						<td><span class="notice">공지</span></td>
 						<td class="left">
 							<a href="${articleUrl}&num=${dto.num}">${dto.subject}</a>
+							<c:if test="${dto.replyCount!=0}">(${dto.replyCount})</c:if>
 						</td>
 						<td>${dto.userName}</td>
 						<td>${dto.reg_date}</td>
