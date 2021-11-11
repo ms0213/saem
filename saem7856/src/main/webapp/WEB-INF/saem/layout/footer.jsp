@@ -6,11 +6,7 @@
 	<div class="inner">
 
 		<!-- Search -->
-		<section id="search" class="alt">
-			<form method="post" action="#">
-				<input type="text" name="query" id="query" placeholder="Search" />
-			</form>
-		</section>
+		<h3>saem7856 withsoccer</h3>
 
 		<!-- Menu -->
 		<nav id="menu">

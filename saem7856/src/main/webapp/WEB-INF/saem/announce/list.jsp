@@ -115,11 +115,12 @@ td a {
 						action="${pageContext.request.contextPath}/announce/list.do">
 						<table class="table">
 							<tr>
-								<td width="20%">${dataCount}개(${page}/${total_page}페이지)</td>
-								<td width="20%" align="center"><c:if
+								<td width="20%">${dataCount}개(${page}/${total_page}페이지) </td>
+								<td>
+								<c:if
 										test="${dataCount!=0 }">
 										<select name="rows" class="selectField"
-											onchange="changeList();">
+											onchange="changeList();" style="display: inline-block;">
 											<option value="5" ${rows==5 ? "selected='selected' ":""}>5개씩
 												출력</option>
 											<option value="10" ${rows==10 ? "selected='selected' ":""}>10개씩
@@ -147,7 +148,8 @@ td a {
 												${condition=="content"?"selected='selected'":"" }>내용</option>
 										</select>
 										 <input type="text" name="keyword" value="${keyword}"
-											class="boxTF" style="width: 100px; display: inline-block;">		
+											class="boxTF" style="width: 150px; display: inline-block;" placeholder="Search" 
+												onkeyup="if(window.event.keyCode==13){searchList()}">		
 											 
 										<button type="button" class="btn" style="display: inline-block;" onclick="searchList();">검색</button>
 
