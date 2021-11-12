@@ -1,3 +1,4 @@
+<%-- 작업중 --%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -38,23 +39,15 @@
 	padding-right: 5px;
 }
 
-.img-box {
-	width: inherit;
-	margin: 10px auto 0;
+.img-box img {
+	width: 600px;
+	height: auto;
+	cursor: pointer;
 }
 
 .photo-layout img {
 	width: 570px;
 	height: 450px;
-}
-
-.slider li {
-	cursor: pointer;
-}
-
-.slider img {
-	width: 800px;
-	height: 470px;
 }
 
 .reply {
@@ -519,29 +512,27 @@
 							</tr>
 
 							<tr>
-								<td colspan="2" height="110" style="background-color: white;">
+								<td colspan="2" style="background-color: white;">
 									<c:choose>
-									<c:when test="${listFile.size() > 1}">
-										<div class="img-box">
-											<ul class="slider">
+										<c:when test="${listFile.size() > 1}">
+												<ul class="slider">
+													<c:forEach var="dto" items="${listFile}">
+														<li data-num="${dto.num}"><img
+															src="${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}"
+															title="${dto.subject}" alt="${dto.subject}"
+															onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}');"></li>
+													</c:forEach>
+												</ul>
+										</c:when>
+										<c:otherwise>
+											<div class="img-box" align="center">
 												<c:forEach var="dto" items="${listFile}">
-													<li data-num="${dto.num}"><img
-														src="${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}"
+													<img src="${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}"
 														title="${dto.subject}" alt="${dto.subject}"
-														onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}');"></li>
+														onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}');">
 												</c:forEach>
-											</ul>
-										</div>
-									</c:when>
-									<c:otherwise>
-										<div class="img-box" align="center">
-											<c:forEach var="dto" items="${listFile}">
-												<img src="${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}"
-													title="${dto.subject}" alt="${dto.subject}"
-													onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}');">
-											</c:forEach>
-										</div>
-									</c:otherwise>
+											</div>
+										</c:otherwise>
 									</c:choose>
 									<p style="text-align: center;">(사진을 클릭하면 새창으로 열립니다.)</p>
 									<p>${dto.content}</p>
@@ -632,6 +623,6 @@
 	<!-- Scripts -->
 	<jsp:include page="/WEB-INF/saem/layout/staticFooter.jsp" />
 	<script type="text/javascript"
-	src="${pageContext.request.contextPath}/assets/slider/js/slider.js"></script>
+		src="${pageContext.request.contextPath}/assets/slider/js/slider.js"></script>
 </body>
 </html>

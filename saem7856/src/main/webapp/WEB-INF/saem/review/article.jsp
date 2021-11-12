@@ -1,3 +1,4 @@
+<%-- 작업중 --%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -12,6 +13,8 @@
 	content="width=device-width, initial-scale=1, user-scalable=no" />
 <link rel="stylesheet" href="assets/css/main.css" />
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/assets/slider/css/slider.min.css">
 <style type="text/css">
 .ui-widget-header { /* 타이틀바 */
 	background: none;
@@ -35,21 +38,9 @@
 	padding-right: 5px;
 }
 
-.img-box {
-	padding: 5px;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	overflow-x: auto;
-}
-
 .img-box img {
-	width: 200px;
-	height: 200px;
-	margin-right: 5px;
-	flex: 0 0 auto;
+	width: 600px;
+	height: auto;
 	cursor: pointer;
 }
 
@@ -57,9 +48,12 @@
 	width: 570px;
 	height: 450px;
 }
+
 .reply {
-	clear: both; padding: 20px 0 10px;
+	clear: both;
+	padding: 20px 0 10px;
 }
+
 .reply .bold {
 	font-weight: 600;
 }
@@ -67,26 +61,34 @@
 .reply .form-header {
 	padding-bottom: 7px;
 }
+
 .reply-form  td {
 	padding: 2px 0 2px;
 }
+
 .reply-form textarea {
-	width: 100%; height: 75px;
+	width: 100%;
+	height: 75px;
 }
+
 .reply-form button {
 	padding: 8px 25px;
 }
 
 .reply .reply-info {
-	padding-top: 25px; padding-bottom: 7px;
+	padding-top: 25px;
+	padding-bottom: 7px;
 }
+
 .reply .reply-info  .reply-count {
-	color: #3EA9CD; font-weight: 700;
+	color: #3EA9CD;
+	font-weight: 700;
 }
 
 .reply .reply-list tr td {
 	padding: 7px 5px;
 }
+
 .reply .reply-list .bold {
 	font-weight: 600;
 }
@@ -94,47 +96,69 @@
 .reply .deleteReply, .reply .deleteReplyAnswer {
 	cursor: pointer;
 }
+
 .reply .notifyReply {
 	cursor: pointer;
 }
 
 .reply-list .list-header {
-	border: 1px solid #ccc; background: #eee;
+	border: 1px solid #ccc;
+	background: #eee;
 }
+
 .reply-list td {
-	padding-left: 7px; padding-right: 7px;
+	padding-left: 7px;
+	padding-right: 7px;
 }
 
 .reply-answer {
 	display: none;
 }
+
 .reply-answer .answer-left {
-	float: left; width: 5%;
+	float: left;
+	width: 5%;
 }
+
 .reply-answer .answer-right {
-	float: left; width: 95%;
+	float: left;
+	width: 95%;
 }
+
 .reply-answer .answer-list {
-	border-top: 1px solid #ccc; padding: 0 10px 7px;
+	border-top: 1px solid #ccc;
+	padding: 0 10px 7px;
 }
+
 .reply-answer .answer-form {
-	clear: both; padding: 3px 10px 5px;
+	clear: both;
+	padding: 3px 10px 5px;
 }
+
 .reply-answer .answer-form textarea {
-	width: 100%; height: 75px;
+	width: 100%;
+	height: 75px;
 }
+
 .reply-answer .answer-footer {
-	clear: both; padding: 0 13px 10px 10px; text-align: right;
+	clear: both;
+	padding: 0 13px 10px 10px;
+	text-align: right;
 }
 
 .answer-article {
 	clear: both;
 }
+
 .answer-article .answer-article-header {
-	clear: both; padding-top: 5px;
+	clear: both;
+	padding-top: 5px;
 }
+
 .answer-article .answer-article-body {
-	clear:both; padding: 5px 5px; border-bottom: 1px solid #ccc;
+	clear: both;
+	padding: 5px 5px;
+	border-bottom: 1px solid #ccc;
 }
 </style>
 <script type="text/javascript">
@@ -159,6 +183,15 @@
 			modal : true
 		});
 	}
+
+	$(function() {
+		$(".slider").slider({
+			speed : 500,
+			delay : 2500
+		/* ,paginationType : 'thumbnails' */// 아래부분에 작은 이미지 출력
+		});
+	});
+
 	function login() {
 		location.href = "${pageContext.request.contextPath}/member/login.do";
 	}
@@ -243,52 +276,59 @@
 
 	// 댓글 등록
 	$(function() {
-		$(".btnSendReply").click(function() {
-			var num = "${dto.num}";
-			var $tb = $(this).closest("table");
-			var content = $tb.find("textarea").val().trim();
-			if (!content) {
-				$tb.find("textarea").focus();
-				return false;
-			}
-			content = encodeURIComponent(content);
+		$(".btnSendReply")
+				.click(
+						function() {
+							var num = "${dto.num}";
+							var $tb = $(this).closest("table");
+							var content = $tb.find("textarea").val().trim();
+							if (!content) {
+								$tb.find("textarea").focus();
+								return false;
+							}
+							content = encodeURIComponent(content);
 
-			var url = "${pageContext.request.contextPath}/review/insertReply.do";
-			var query = "num=" + num + "&content=" + content + "&answer=0";
+							var url = "${pageContext.request.contextPath}/review/insertReply.do";
+							var query = "num=" + num + "&content=" + content
+									+ "&answer=0";
 
-			var fn = function(data) {
-				var state = data.state;
+							var fn = function(data) {
+								var state = data.state;
 
-				$tb.find("textarea").val("");
+								$tb.find("textarea").val("");
 
-				if (state === "true") {
-					listPage(1);
-				} else {
-					alert("댓글 등록에 실패했습니다.");
-				}
-			};
-			ajaxFun(url, "post", query, "json", fn);
+								if (state === "true") {
+									listPage(1);
+								} else {
+									alert("댓글 등록에 실패했습니다.");
+								}
+							};
+							ajaxFun(url, "post", query, "json", fn);
 
-		});
+						});
 	});
 
 	// 댓글 삭제
 	$(function() {
-		$("body").on("click", ".deleteReply", function() {
-			if (!confirm("댓글을 삭제하시겠습니까?")) {
-				return false;
-			}
-			var replyNum = $(this).attr("data-replyNum");
-			var pageNo = $(this).attr("data-pageNo");
+		$("body")
+				.on(
+						"click",
+						".deleteReply",
+						function() {
+							if (!confirm("댓글을 삭제하시겠습니까?")) {
+								return false;
+							}
+							var replyNum = $(this).attr("data-replyNum");
+							var pageNo = $(this).attr("data-pageNo");
 
-			var url = "${pageContext.request.contextPath}/review/deleteReply.do";
-			var query = "replyNum=" + replyNum;
+							var url = "${pageContext.request.contextPath}/review/deleteReply.do";
+							var query = "replyNum=" + replyNum;
 
-			var fn = function(data) {
-				listPage(pageNo);
-			};
-			ajaxFun(url, "post", query, "json", fn);
-		});
+							var fn = function(data) {
+								listPage(pageNo);
+							};
+							ajaxFun(url, "post", query, "json", fn);
+						});
 	});
 
 	// 댓글 좋아요/싫어요
@@ -455,7 +495,9 @@
 
 				<!-- Section -->
 				<div class="title" style="margin: 30px 0 30px 0">
-					<h1><i class="far fa-image"></i> 굿즈 리뷰</h1>
+					<h1>
+						<i class="far fa-image"></i> 굿즈 리뷰
+					</h1>
 					<div class="title" style="margin: 30px 0 30px 0">
 
 						<table class="table table-border table-article">
@@ -465,28 +507,42 @@
 
 							<tr>
 								<td width="50%">작성자 : ${dto.userName}</td>
-								<td align="right">${dto.reg_date} | 조회 ${dto.hitCount}</td>
+								<td align="right">${dto.reg_date}| 조회 ${dto.hitCount}</td>
 							</tr>
 
 							<tr>
-								<td colspan="2" height="110" style="background-color: white;">
-									<div class="img-box">
-										<c:forEach var="vo" items="${listFile}">
-											<img
-												src="${pageContext.request.contextPath}/uploads/review/${vo.imageFilename}"
-												onclick="imageViewer('${pageContext.request.contextPath}/uploads/review/${vo.imageFilename}');">
-										</c:forEach>
-									</div>
-									<p style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
-									<p >${dto.content}</p>
+								<td colspan="2" style="background-color: white;"><c:choose>
+										<c:when test="${listFile.size() > 1}">
+											<ul class="slider">
+												<c:forEach var="dto" items="${listFile}">
+													<li data-num="${dto.num}"><img
+														src="${pageContext.request.contextPath}/uploads/review/${dto.imageFilename}"
+														title="${dto.subject}" alt="${dto.subject}"
+														onclick="imageViewer('${pageContext.request.contextPath}/uploads/review/${dto.imageFilename}');"></li>
+												</c:forEach>
+											</ul>
+										</c:when>
+										<c:otherwise>
+											<div class="img-box" align="center">
+												<c:forEach var="dto" items="${listFile}">
+													<img
+														src="${pageContext.request.contextPath}/uploads/review/${dto.imageFilename}"
+														title="${dto.subject}" alt="${dto.subject}"
+														onclick="imageViewer('${pageContext.request.contextPath}/uploads/review/${dto.imageFilename}');">
+												</c:forEach>
+											</div>
+										</c:otherwise>
+									</c:choose>
+									<p style="text-align: center;">(사진을 클릭하면 새창으로 열립니다.)</p>
+									<p>${dto.content}</p>
 									<p align="center">
-										<button type="button" class="btn btnSendReviewLike" title="좋아요">
+										<button type="button" class="btn btnSendReviewLike"
+											title="좋아요">
 											<i class="fas fa-thumbs-up"
 												style="color: ${isUserLike?'blue':'black'}"></i>&nbsp;&nbsp;<span
 												id="reviewLikeCount">${dto.reviewLikeCount}</span>
 										</button>
-									</p>
-								</td>
+									</p></td>
 							</tr>
 							<tr>
 								<td colspan="2" style="background-color: white;">다음글 : <c:if
@@ -506,7 +562,8 @@
 							</tr>
 							<tr>
 								<td width="50%"><c:choose>
-										<c:when test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
+										<c:when
+											test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
 											<button type="button" class="btn"
 												onclick="location.href='${pageContext.request.contextPath}/review/update.do?num=${dto.num}&page=${page}';">수정</button>
 										</c:when>
@@ -514,7 +571,8 @@
 											<button type="button" class="btn" disabled="disabled">수정</button>
 										</c:otherwise>
 									</c:choose> <c:choose>
-										<c:when test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
+										<c:when
+											test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
 											<button type="button" class="btn" onclick="deletePhoto();">삭제</button>
 										</c:when>
 										<c:otherwise>
@@ -565,6 +623,7 @@
 
 	<!-- Scripts -->
 	<jsp:include page="/WEB-INF/saem/layout/staticFooter.jsp" />
-
+	<script type="text/javascript"
+		src="${pageContext.request.contextPath}/assets/slider/js/slider.js"></script>
 </body>
 </html>
