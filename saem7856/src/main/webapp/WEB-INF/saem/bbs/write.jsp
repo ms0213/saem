@@ -14,9 +14,6 @@
 .table-form td {
 	padding: 7px 0;
 }
-.table-form p {
-	line-height: 200%;
-}
 .table-form tr > td:first-child {
 	width: 110px; text-align: center; background: #eee;
 }
@@ -84,7 +81,7 @@ function sendOk() {
 				<tr> 
 					<td>작성자</td>
 					<td> 
-						<p>${sessionScope.member.userName}</p>
+						<p style="height: 10px;">${sessionScope.member.userName}</p>
 					</td>
 				</tr>
 				

@@ -76,6 +76,11 @@
 				</td>
 			</tr>
 			<tr>
+				<td colspan="2" align="center">
+					리그 순위표
+				</td>
+			</tr>
+			<tr>
 				<td colspan="2" style="padding-top: 0;">
 					<div class="editor3">${dto.content3}</div>
 				</td>
