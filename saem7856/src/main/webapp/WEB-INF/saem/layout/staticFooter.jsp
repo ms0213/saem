@@ -11,4 +11,5 @@
 <script src="${pageContext.request.contextPath}/assets/js/browser.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/breakpoints.min.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/util.js"></script>
-<script src="${pageContext.request.contextPath}/assets/js/main.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/main.js?v=2"></script>
+

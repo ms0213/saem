@@ -11,6 +11,14 @@
 	content="width=device-width, initial-scale=1, user-scalable=no" />
 <link rel="stylesheet" href="assets/css/main.css" />
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp"/>
+<style type="text/css">
+.content .item {
+	border: 1px solid #DAD9FF;  cursor: pointer;
+}
+.features img {
+  width: 100%; height: 100%; cursor: pointer;
+}
+</style>
 </head>
 <body class="is-preload">
 
@@ -37,45 +45,21 @@
 				<!-- Section -->
 				<section>
 					<header class="major">
-						<h2>Erat lacinia</h2>
+						<h2>최신 기사!</h2>
 					</header>
 					<div class="features">
-						<article>
-							<span class="icon fa-gem"></span>
-							<div class="content">
-								<h3>Portitor ullamcorper</h3>
-								<p>Aenean ornare velit lacus, ac varius enim lorem
-									ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed
-									nulla amet lorem feugiat tempus aliquam.</p>
-							</div>
-						</article>
-						<article>
-							<span class="icon solid fa-paper-plane"></span>
-							<div class="content">
-								<h3>Sapien veroeros</h3>
-								<p>Aenean ornare velit lacus, ac varius enim lorem
-									ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed
-									nulla amet lorem feugiat tempus aliquam.</p>
-							</div>
-						</article>
-						<article>
-							<span class="icon solid fa-rocket"></span>
-							<div class="content">
-								<h3>Quam lorem ipsum</h3>
-								<p>Aenean ornare velit lacus, ac varius enim lorem
-									ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed
-									nulla amet lorem feugiat tempus aliquam.</p>
-							</div>
-						</article>
-						<article>
-							<span class="icon solid fa-signal"></span>
-							<div class="content">
-								<h3>Sed magna finibus</h3>
-								<p>Aenean ornare velit lacus, ac varius enim lorem
-									ullamcorper dolore. Proin aliquam facilisis ante interdum. Sed
-									nulla amet lorem feugiat tempus aliquam.</p>
-							</div>
-						</article>
+						<c:forEach var="dto" items="${list}" varStatus="status">
+							<article>
+								<span>
+									<img src="${pageContext.request.contextPath}/uploads/articlePhoto/${dto.imageFilename}">
+								</span>
+								<div class="content">
+									<div class="item"
+									onclick="location.href='${pageContext.request.contextPath}/article/article.do?page=1&num=${dto.num}';">${dto.subject}</div>
+									<p>${dto.content}</p>
+								</div>
+							</article>	
+						</c:forEach>					
 					</div>
 				</section>
 
