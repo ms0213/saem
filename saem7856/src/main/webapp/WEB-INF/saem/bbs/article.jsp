@@ -581,15 +581,21 @@ $(function(){
 		<table class="table">
 			<tr>
 				<td width="50%">
+					<c:if test="${sessionScope.member.userId=='admin'}">
+						<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/bbs/updateN.do?num=${dto.num}&page=${page}';">수정</button>
+					</c:if>
+<%-- 					<c:if test="${sessionScope.member.userId==dto.userId && sessionScope.member.userId!='admin'}"> --%>
+<%-- 						<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/bbs/updateN.do?num=${dto.num}&page=${page}';">수정</button> --%>
+<%-- 					</c:if> --%>
 					<c:choose>
-						<c:when test="${sessionScope.member.userId==dto.userId}">
+						<c:when test="${sessionScope.member.userId==dto.userId && sessionScope.member.userId!='admin'}">
 							<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/bbs/update.do?num=${dto.num}&page=${page}';">수정</button>
-						</c:when>
+						</c:when>					
 						<c:otherwise>
-							<button type="button" class="btn" disabled="disabled">수정</button>
+<!-- 							<button type="button" class="btn" hidden="true">수정</button> -->
 						</c:otherwise>
 					</c:choose>
-			    	
+		    	
 					<c:choose>
 			    		<c:when test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
 			    			<button type="button" class="btn" onclick="deleteBoard();">삭제</button>

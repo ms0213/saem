@@ -22,7 +22,6 @@ import org.json.JSONObject;
 
 import com.member.SessionInfo;
 
-
 import saem.util.MyServlet;
 import saem.util.MyUtil;
 
@@ -58,6 +57,12 @@ public class BoardServlet extends MyServlet {
 			updateForm(req, resp);
 		} else if (uri.indexOf("update_ok.do") != -1) {
 			updateSubmit(req, resp);
+		
+		} else if (uri.indexOf("updateN.do") != -1) {
+			updateNoticeForm(req, resp);
+		} else if (uri.indexOf("updateN_ok.do") != -1) {
+			updateNoticeSubmit(req, resp);
+		
 		} else if (uri.indexOf("delete.do") != -1) {
 			delete(req, resp);
 		} else if (uri.indexOf("notice.do") != -1) {
@@ -377,6 +382,7 @@ public class BoardServlet extends MyServlet {
 				resp.sendRedirect(cp + "/bbs/list.do?page=" + page);
 				return;
 			}
+			
 
 			req.setAttribute("dto", dto);
 			req.setAttribute("page", page);
@@ -415,6 +421,80 @@ public class BoardServlet extends MyServlet {
 			dto.setUserId(info.getUserId());
 
 			dao.updateBoard(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		resp.sendRedirect(cp + "/bbs/list.do?page=" + page);
+	}
+	
+	private void updateNoticeForm(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 수정 폼
+		BoardDAO dao = new BoardDAO();
+
+		
+	
+		
+		String cp = req.getContextPath();
+
+		String page = req.getParameter("page");
+
+		try {
+			int num = Integer.parseInt(req.getParameter("num"));
+			BoardDTO dto = dao.readNotice(num);
+
+			if (dto == null) {
+				resp.sendRedirect(cp + "/bbs/list.do?page=" + page);
+				return;
+			}
+
+			// 게시물을 올린 사용자가 아니면
+//			if (! dto.getUserId().equals(info.getUserId())) {
+//				resp.sendRedirect(cp + "/bbs/list.do?page=" + page);
+//				return;
+//			}
+			
+
+			req.setAttribute("dto", dto);
+			req.setAttribute("page", page);
+			req.setAttribute("mode", "updateN");
+
+			forward(req, resp, "/WEB-INF/saem/bbs/writeAdmin.jsp");
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		resp.sendRedirect(cp + "/bbs/list.do?page=" + page);
+	}
+
+	private void updateNoticeSubmit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 수정 완료
+		BoardDAO dao = new BoardDAO();
+
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo) session.getAttribute("member");
+		
+		String cp = req.getContextPath();
+		if (req.getMethod().equalsIgnoreCase("GET")) {
+			resp.sendRedirect(cp + "/bbs/list.do");
+			return;
+		}
+
+		String page = req.getParameter("page");
+		try {
+			BoardDTO dto = new BoardDTO();
+			
+			dto.setNum(Integer.parseInt(req.getParameter("num")));
+			if (req.getParameter("notice") != null) {
+				dto.setNotice(Integer.parseInt(req.getParameter("notice")));
+			}
+			dto.setSubject(req.getParameter("subject"));
+			dto.setContent(req.getParameter("content"));
+
+			dto.setUserId(info.getUserId());
+
+			dao.updateNotice(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

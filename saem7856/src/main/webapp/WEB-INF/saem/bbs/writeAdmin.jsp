@@ -118,11 +118,11 @@
 							<table class="table">
 								<tr>
 									<td align="center">
-										<button type="button" class="btn" onclick="sendOk();">${mode=='update'?'수정완료':'등록하기'}</button>
+										<button type="button" class="btn" onclick="sendOk();">${mode=='updateN'?'수정완료':'등록하기'}</button>
 										<button type="reset" class="btn">다시입력</button>
 										<button type="button" class="btn"
-											onclick="location.href='${pageContext.request.contextPath}/bbs/list.do';">${mode=='update'?'수정취소':'등록취소'}</button>
-										<c:if test="${mode=='update'}">
+											onclick="location.href='${pageContext.request.contextPath}/bbs/list.do';">${mode=='updateN'?'수정취소':'등록취소'}</button>
+										<c:if test="${mode=='updateN'}">
 											<input type="hidden" name="num" value="${dto.num}">
 											<input type="hidden" name="page" value="${page}">
 										</c:if>

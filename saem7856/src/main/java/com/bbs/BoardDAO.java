@@ -595,6 +595,41 @@ public class BoardDAO {
 		}
 		return result;
 	}
+	
+	public int updateNotice(BoardDTO dto) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+
+		try {
+			sql = "UPDATE bbs SET notice=?, subject=?, content=? "
+					+ " WHERE num=?";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, dto.getNotice());
+			pstmt.setString(2, dto.getSubject());
+			pstmt.setString(3, dto.getContent());
+			pstmt.setInt(4, dto.getNum());
+			
+			result = pstmt.executeUpdate();
+			pstmt.close();
+			pstmt = null;
+
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if (pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+
+		return result;
+	}
 
 	// 게시물 삭제
 	public int deleteBoard(int num, String userId) throws SQLException {
