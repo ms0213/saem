@@ -118,7 +118,8 @@
 								<tr>
 									<td>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
 									<td><input type="text" name="subject" maxlength="100"
-										class="boxTF" value="${dto.subject}"></td>
+										class="boxTF" value="${dto.subject}">
+										<input type="hidden" name="gdsNum" value="${dto.gdsNum}"></td>
 								</tr>
 								<tr>
 									<td>작성자</td>
@@ -162,16 +163,10 @@
 										<button type="reset" class="btn">다시입력</button>
 										<button type="button" class="btn"
 											onclick="location.href='${pageContext.request.contextPath}/review/list.do';">${mode=='update'?'수정취소':'등록취소'}</button>
-										<c:choose>
-											<c:when test="${mode=='update'}">
-												<input type="hidden" name="num" value="${dto.num}">
-												<input type="hidden" name="page" value="${page}">
-												<input type="hidden" name="gdsNum" value="${dto.gdsNum}">
-											</c:when>
-											<c:otherwise>
-												<input type="hidden" name="gdsNum" value="${dto.gdsNum}">
-											</c:otherwise>
-										</c:choose>
+										<c:if test="${mode=='update'}">
+											<input type="hidden" name="num" value="${dto.num}">
+											<input type="hidden" name="page" value="${page}">
+										</c:if>
 									</td>
 								</tr>
 							</table>

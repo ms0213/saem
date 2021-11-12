@@ -1,3 +1,4 @@
+<%-- 작업중 --%>
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page trimDirectiveWhitespaces="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -12,6 +13,8 @@
 	content="width=device-width, initial-scale=1, user-scalable=no" />
 <link rel="stylesheet" href="assets/css/main.css" />
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
+<link rel="stylesheet"
+	href="${pageContext.request.contextPath}/assets/slider/css/slider.min.css">
 <style type="text/css">
 .ui-widget-header { /* 타이틀바 */
 	background: none;
@@ -35,21 +38,9 @@
 	padding-right: 5px;
 }
 
-.img-box {
-	padding: 5px;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	overflow-x: auto;
-}
-
 .img-box img {
-	width: 200px;
-	height: 200px;
-	margin-right: 5px;
-	flex: 0 0 auto;
+	width: 600px;
+	height: auto;
 	cursor: pointer;
 }
 
@@ -59,27 +50,35 @@
 }
 </style>
 <script type="text/javascript">
-function deletePhoto() {
-	if (confirm("게시글을 삭제하시겠습니까?")) {
-		var query = "num=${dto.num}&page=${page}";
-		var url = "${pageContext.request.contextPath}/goods/delete.do?"
-				+ query;
-		location.href = url;
+	function deletePhoto() {
+		if (confirm("게시글을 삭제하시겠습니까?")) {
+			var query = "num=${dto.num}&page=${page}";
+			var url = "${pageContext.request.contextPath}/goods/delete.do?"
+					+ query;
+			location.href = url;
+		}
 	}
-}
 
-function imageViewer(img) {
-	var viewer = $(".photo-layout");
-	var s = "<img src='"+img+"'>";
-	viewer.html(s);
+	function imageViewer(img) {
+		var viewer = $(".photo-layout");
+		var s = "<img src='"+img+"'>";
+		viewer.html(s);
 
-	$(".dialog-photo").dialog({
-		title : "image",
-		width : 600,
-		height : 530,
-		modal : true
+		$(".dialog-photo").dialog({
+			title : "image",
+			width : 600,
+			height : 530,
+			modal : true
+		});
+	}
+
+	$(function() {
+		$(".slider").slider({
+			speed : 500,
+			delay : 2500
+		/* ,paginationType : 'thumbnails' */// 아래부분에 작은 이미지 출력
+		});
 	});
-}
 </script>
 </head>
 
@@ -98,7 +97,9 @@ function imageViewer(img) {
 
 				<!-- Section -->
 				<div class="title" style="margin: 30px 0 30px 0">
-					<h1><i class="far fa-image"></i> 굿즈 소개</h1>
+					<h1>
+						<i class="far fa-image"></i> 굿즈 소개
+					</h1>
 					<div class="title" style="margin: 30px 0 30px 0">
 
 						<table class="table table-border table-article">
@@ -107,25 +108,40 @@ function imageViewer(img) {
 							</tr>
 
 							<tr>
-								<td align="right">${dto.reg_date} | 조회 ${dto.hitCount}</td>
+								<td align="right">${dto.reg_date}| 조회 ${dto.hitCount}</td>
 							</tr>
 
 							<tr>
-								<td colspan="2" height="110" style="background-color: white;">
-									<div class="img-box">
-										<c:forEach var="vo" items="${listFile}">
-											<img
-												src="${pageContext.request.contextPath}/uploads/goods/${vo.imageFilename}"
-												onclick="imageViewer('${pageContext.request.contextPath}/uploads/goods/${vo.imageFilename}');">
-										</c:forEach>
-									</div>
-									<p style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
+								<td colspan="2" style="background-color: white;"><c:choose>
+										<c:when test="${listFile.size() > 1}">
+											<ul class="slider">
+												<c:forEach var="dto" items="${listFile}">
+													<li data-num="${dto.num}"><img
+														src="${pageContext.request.contextPath}/uploads/goods/${dto.imageFilename}"
+														title="${dto.subject}" alt="${dto.subject}"
+														onclick="imageViewer('${pageContext.request.contextPath}/uploads/goods/${dto.imageFilename}');"></li>
+												</c:forEach>
+											</ul>
+										</c:when>
+										<c:otherwise>
+											<div class="img-box" align="center">
+												<c:forEach var="dto" items="${listFile}">
+													<img
+														src="${pageContext.request.contextPath}/uploads/goods/${dto.imageFilename}"
+														title="${dto.subject}" alt="${dto.subject}"
+														onclick="imageViewer('${pageContext.request.contextPath}/uploads/goods/${dto.imageFilename}');">
+												</c:forEach>
+											</div>
+										</c:otherwise>
+									</c:choose>
+									<p style="text-align: center;">(사진을 클릭하면 새창으로 열립니다.)</p>
 									<p>${dto.content}</p>
 									<p style="text-align: center;">
-									<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/review/list.do?gdsnum=${dto.num}';">리뷰보기</button>
-									<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/review/write.do?gdsnum=${dto.num}';">리뷰쓰기</button>
-									</p>
-								</td>
+										<button type="button" class="btn"
+											onclick="location.href='${pageContext.request.contextPath}/review/list.do?gdsnum=${dto.num}';">리뷰보기</button>
+										<button type="button" class="btn"
+											onclick="location.href='${pageContext.request.contextPath}/review/write.do?gdsnum=${dto.num}';">리뷰쓰기</button>
+									</p></td>
 							</tr>
 							<tr>
 								<td colspan="2" style="background-color: white;">다음글 : <c:if
@@ -183,6 +199,7 @@ function imageViewer(img) {
 
 	<!-- Scripts -->
 	<jsp:include page="/WEB-INF/saem/layout/staticFooter.jsp" />
-
+	<script type="text/javascript"
+		src="${pageContext.request.contextPath}/assets/slider/js/slider.js"></script>
 </body>
 </html>

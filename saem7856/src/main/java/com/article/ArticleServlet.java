@@ -377,7 +377,7 @@ public class ArticleServlet extends MyUploadServlet{
 			
 			ArticleDTO dto = dao.readArticle(num);
 			if (dto == null) {
-				resp.sendRedirect(cp + "/article/list.do?page=" + query);
+				resp.sendRedirect(cp + "/article/list.do?page="+page);
 				return;
 			}
 			
@@ -394,7 +394,7 @@ public class ArticleServlet extends MyUploadServlet{
 			e.printStackTrace();
 		}
 		
-		resp.sendRedirect(cp + "/article/list.do?page=" + query);
+		resp.sendRedirect(cp + "/article/list.do?page=" + page);
 		
 		
 	}
