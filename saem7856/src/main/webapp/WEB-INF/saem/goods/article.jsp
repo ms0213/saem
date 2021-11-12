@@ -122,8 +122,8 @@ function imageViewer(img) {
 									<p style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
 									<p>${dto.content}</p>
 									<p style="text-align: center;">
-									<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/review/list.do';">리뷰보기</button>
-									<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/review/write.do';">리뷰쓰기</button>
+									<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/review/list.do?gdsnum=${dto.num}';">리뷰보기</button>
+									<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/review/write.do?gdsnum=${dto.num}';">리뷰쓰기</button>
 									</p>
 								</td>
 							</tr>

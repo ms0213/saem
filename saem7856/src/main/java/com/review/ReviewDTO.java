@@ -17,6 +17,8 @@ public class ReviewDTO {
 	private int replyCount;
 	private int reviewLikeCount;
 	
+	private int gdsNum;
+	
 	public int getReplyCount() {
 		return replyCount;
 	}
@@ -95,4 +97,11 @@ public class ReviewDTO {
 	public void setImageFiles(String[] imageFiles) {
 		this.imageFiles = imageFiles;
 	}
+	public int getGdsNum() {
+		return gdsNum;
+	}
+	public void setGdsNum(int gdsNum) {
+		this.gdsNum = gdsNum;
+	}
+	
 }

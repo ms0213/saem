@@ -218,6 +218,7 @@ req.setCharacterEncoding("utf-8");
 			// 파라미터
 			dto.setSubject(req.getParameter("subject"));
 			dto.setContent(req.getParameter("content"));
+			dto.setGdsNum(Integer.parseInt(req.getParameter("gdsNum")));
 			
 			Map<String, String[]> map = doFileUpload(req.getParts(), pathname);
 			if(map != null) {

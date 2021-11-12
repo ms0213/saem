@@ -43,6 +43,11 @@
 	margin: 10px auto 0;
 }
 
+.photo-layout img {
+	width: 570px;
+	height: 450px;
+}
+
 .slider li {
 	cursor: pointer;
 }
@@ -173,6 +178,19 @@
 					+ query;
 			location.href = url;
 		}
+	}
+	
+	function imageViewer(img) {
+		var viewer = $(".photo-layout");
+		var s = "<img src='"+img+"'>";
+		viewer.html(s);
+
+		$(".dialog-photo").dialog({
+			title : "image",
+			width : 600,
+			height : 530,
+			modal : true
+		});
 	}
 
 	$(function() {
@@ -502,19 +520,30 @@
 
 							<tr>
 								<td colspan="2" height="110" style="background-color: white;">
-
-									<c:if test="${listFile.size() > 0}">
+									<c:choose>
+									<c:when test="${listFile.size() > 1}">
 										<div class="img-box">
 											<ul class="slider">
 												<c:forEach var="dto" items="${listFile}">
 													<li data-num="${dto.num}"><img
 														src="${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}"
-														title="${dto.subject}" alt="${dto.subject}"></li>
+														title="${dto.subject}" alt="${dto.subject}"
+														onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}');"></li>
 												</c:forEach>
 											</ul>
 										</div>
-									</c:if>
-									<p style="text-align: center;">(사진을 클릭하면 커집니다.)</p>
+									</c:when>
+									<c:otherwise>
+										<div class="img-box" align="center">
+											<c:forEach var="dto" items="${listFile}">
+												<img src="${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}"
+													title="${dto.subject}" alt="${dto.subject}"
+													onclick="imageViewer('${pageContext.request.contextPath}/uploads/photo/${dto.imageFilename}');">
+											</c:forEach>
+										</div>
+									</c:otherwise>
+									</c:choose>
+									<p style="text-align: center;">(사진을 클릭하면 새창으로 열립니다.)</p>
 									<p>${dto.content}</p>
 									<p align="center">
 										<button type="button" class="btn btnSendPhotoLike" title="좋아요">

@@ -38,14 +38,15 @@ public class ReviewDAO {
 			rs = null;
 			pstmt = null;
 			
-			sql = "insert into review(num, userId, subject, content, hitCount, reg_date) "
-					+ " values (?, ?, ?, ?, 0, SYSDATE)";
+			sql = "insert into review(num, userId, subject, content, hitCount, reg_date, gdsNum ) "
+					+ " values (?, ?, ?, ?, 0, SYSDATE, ?)";
 			pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setInt(1, dto.getNum());
 			pstmt.setString(2, dto.getUserId());
 			pstmt.setString(3, dto.getSubject());
 			pstmt.setString(4, dto.getContent());
+			pstmt.setInt(5, dto.getGdsNum());
 
 			result = pstmt.executeUpdate();
 			
