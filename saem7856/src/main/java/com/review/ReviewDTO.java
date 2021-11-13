@@ -9,12 +9,28 @@ public class ReviewDTO {
 	private String content;
 	private String reg_date;
 	private int hitCount;
-	private int gdsNum;
 	
 	private int fileNum;
 	private String imageFilename;
 	private String[] imageFiles;
 	
+	private int replyCount;
+	private int reviewLikeCount;
+	
+	private int gdsNum;
+	
+	public int getReplyCount() {
+		return replyCount;
+	}
+	public void setReplyCount(int replyCount) {
+		this.replyCount = replyCount;
+	}
+	public int getReviewLikeCount() {
+		return reviewLikeCount;
+	}
+	public void setReviewLikeCount(int reviewLikeCount) {
+		this.reviewLikeCount = reviewLikeCount;
+	}
 	public String getUserName() {
 		return userName;
 	}
@@ -30,8 +46,8 @@ public class ReviewDTO {
 	public int getNum() {
 		return num;
 	}
-	public void setNum(int boardNum) {
-		this.num = boardNum;
+	public void setNum(int num) {
+		this.num = num;
 	}
 	public String getUserId() {
 		return userId;
@@ -63,12 +79,6 @@ public class ReviewDTO {
 	public void setHitCount(int hitCount) {
 		this.hitCount = hitCount;
 	}
-	public int getGdsNum() {
-		return gdsNum;
-	}
-	public void setGdsNum(int gdsNum) {
-		this.gdsNum = gdsNum;
-	}
 	public int getFileNum() {
 		return fileNum;
 	}
@@ -87,4 +97,11 @@ public class ReviewDTO {
 	public void setImageFiles(String[] imageFiles) {
 		this.imageFiles = imageFiles;
 	}
+	public int getGdsNum() {
+		return gdsNum;
+	}
+	public void setGdsNum(int gdsNum) {
+		this.gdsNum = gdsNum;
+	}
+	
 }

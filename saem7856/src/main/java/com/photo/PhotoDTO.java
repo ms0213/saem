@@ -11,6 +11,21 @@ public class PhotoDTO {
 	private String imageFilename;
 	private String[] imageFiles;
 	
+	private int replyCount;
+	private int photoLikeCount;
+	
+	public int getReplyCount() {
+		return replyCount;
+	}
+	public void setReplyCount(int replyCount) {
+		this.replyCount = replyCount;
+	}
+	public int getPhotoLikeCount() {
+		return photoLikeCount;
+	}
+	public void setPhotoLikeCount(int photoLikeCount) {
+		this.photoLikeCount = photoLikeCount;
+	}
 	public int getNum() {
 		return num;
 	}

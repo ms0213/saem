@@ -6,11 +6,7 @@
 	<div class="inner">
 
 		<!-- Search -->
-		<section id="search" class="alt">
-			<form method="post" action="#">
-				<input type="text" name="query" id="query" placeholder="Search" />
-			</form>
-		</section>
+		<h3>saem7856 withsoccer</h3>
 
 		<!-- Menu -->
 		<nav id="menu">
@@ -23,7 +19,7 @@
 				<li><a href="${pageContext.request.contextPath}/player/list.do">Players</a></li>
 				<li><span class="opener">News</span>
 					<ul>
-						<li><a href="${pageContext.request.contextPath}/fixture/list.do">일정</a></li>
+						<li><a href="${pageContext.request.contextPath}/fixture/month.do">일정</a></li>
 						<li><a href="${pageContext.request.contextPath}/article/list.do">기사</a></li>
 						<li><a href="${pageContext.request.contextPath}/photo/list.do">photo</a></li>
 					</ul></li>

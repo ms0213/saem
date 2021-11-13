@@ -13,11 +13,26 @@ public class BoardDTO {
 	
 	private long gap;
 	
+	private int replyCount;
+	private int boardLikeCount;
 	
 	
 	
 	
 	
+	
+	public int getReplyCount() {
+		return replyCount;
+	}
+	public void setReplyCount(int replyCount) {
+		this.replyCount = replyCount;
+	}
+	public int getBoardLikeCount() {
+		return boardLikeCount;
+	}
+	public void setBoardLikeCount(int boardLikeCount) {
+		this.boardLikeCount = boardLikeCount;
+	}
 	public long getGap() {
 		return gap;
 	}

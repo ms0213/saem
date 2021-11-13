@@ -98,76 +98,81 @@
 	</c:if>
 </script>
 </head>
-<body>
-	<div id="main">
-		<div class="inner">
-			<header id="header">
-				<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
-			</header>
-			<div class="body-title">
-				<h3>
-					<i class="far fa-image"></i> 사진 등록
-				</h3>
+<body class="is-preload">
+	<div id="wrapper">
+		<div id="main">
+			<div class="inner">
+				<header id="header">
+					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
+				</header>
+				<main>
+					<div class="body-container">
+						<div class="body-title">
+							<h3>
+								<i class="far fa-image"></i> 사진 등록
+							</h3>
+						</div>
+
+						<form name="photoForm" method="post" enctype="multipart/form-data">
+							<table class="table table-border table-form">
+								<tr>
+									<td>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
+									<td><input type="text" name="subject" maxlength="100"
+										class="boxTF" value="${dto.subject}"></td>
+								</tr>
+								<tr>
+									<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용</td>
+									<td><textarea name="content" class="boxTA">${dto.content}</textarea>
+									</td>
+								</tr>
+
+								<tr>
+									<td>이미지</td>
+									<td><input type="file" name="selectFile" accept="image/*"
+										multiple="multiple" class="boxTF"></td>
+								</tr>
+
+								<c:if test="${mode=='update'}">
+									<tr>
+										<td>등록이미지</td>
+										<td>
+											<div class="img-box">
+												<c:forEach var="vo" items="${listFile}">
+													<img
+														src="${pageContext.request.contextPath}/uploads/photo/${vo.imageFilename}"
+														onclick="deleteFile('${vo.fileNum}');">
+												</c:forEach>
+											</div>
+										</td>
+									</tr>
+								</c:if>
+
+							</table>
+
+							<table class="table">
+								<tr>
+									<td align="center">
+										<button type="button" class="btn" onclick="sendOk();">${mode=='update'?'수정완료':'등록하기'}</button>
+										<button type="reset" class="btn">다시입력</button>
+										<button type="button" class="btn"
+											onclick="location.href='${pageContext.request.contextPath}/photo/list.do';">${mode=='update'?'수정취소':'등록취소'}</button>
+										<c:if test="${mode=='update'}">
+											<input type="hidden" name="num" value="${dto.num}">
+											<input type="hidden" name="page" value="${page}">
+										</c:if>
+									</td>
+								</tr>
+							</table>
+
+						</form>
+					</div>
+				</main>
 			</div>
+		</div>
 
-			<form name="photoForm" method="post" enctype="multipart/form-data">
-				<table class="table table-border table-form">
-					<tr>
-						<td>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-						<td><input type="text" name="subject" maxlength="100"
-							class="boxTF" value="${dto.subject}"></td>
-					</tr>
-					<tr>
-						<td valign="top">내&nbsp;&nbsp;&nbsp;&nbsp;용</td>
-						<td><textarea name="content" class="boxTA">${dto.content}</textarea>
-						</td>
-					</tr>
-
-					<tr>
-						<td>이미지</td>
-						<td><input type="file" name="selectFile" accept="image/*"
-							multiple="multiple" class="boxTF"></td>
-					</tr>
-
-					<c:if test="${mode=='update'}">
-						<tr>
-							<td>등록이미지</td>
-							<td>
-								<div class="img-box">
-									<c:forEach var="vo" items="${listFile}">
-										<img
-											src="${pageContext.request.contextPath}/uploads/photo/${vo.imageFilename}"
-											onclick="deleteFile('${vo.fileNum}');">
-									</c:forEach>
-								</div>
-							</td>
-						</tr>
-					</c:if>
-
-				</table>
-
-				<table class="table">
-					<tr>
-						<td align="center">
-							<button type="button" class="btn" onclick="sendOk();">${mode=='update'?'수정완료':'등록하기'}</button>
-							<button type="reset" class="btn">다시입력</button>
-							<button type="button" class="btn"
-								onclick="location.href='${pageContext.request.contextPath}/photo/list.do';">${mode=='update'?'수정취소':'등록취소'}</button>
-							<c:if test="${mode=='update'}">
-								<input type="hidden" name="num" value="${dto.num}">
-								<input type="hidden" name="page" value="${page}">
-							</c:if>
-						</td>
-					</tr>
-				</table>
-
-			</form>
-
-			<!-- Sidebar -->
-			<div id="sidebar">
-				<jsp:include page="/WEB-INF/saem/layout/footer.jsp"></jsp:include>
-			</div>
-
+		<!-- Sidebar -->
+		<div id="sidebar">
+			<jsp:include page="/WEB-INF/saem/layout/footer.jsp"></jsp:include>
 		</div>
 	</div>
 	<!-- Scripts -->

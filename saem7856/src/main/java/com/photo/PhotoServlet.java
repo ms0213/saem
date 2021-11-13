@@ -2,6 +2,8 @@ package com.photo;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +13,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
+
 
 import com.member.SessionInfo;
 
@@ -58,6 +63,26 @@ public class PhotoServlet extends MyUploadServlet {
 			deleteFile(req, resp);
 		} else if(uri.indexOf("delete.do") != -1) {
 			delete(req, resp);
+		} else if (uri.indexOf("insertPhotoLike.do") != -1){
+			insertPhotoLike(req, resp);
+		} else if (uri.indexOf("insertReply.do") != -1){
+			insertReply(req, resp);
+		} else if (uri.indexOf("listReply.do") != -1){
+			listReply(req, resp);
+		} else if (uri.indexOf("deleteReply.do") != -1){
+			deleteReply(req, resp);
+		} else if (uri.indexOf("insertReplyLike.do") != -1){
+			insertReplyLike(req, resp);
+		} else if (uri.indexOf("countReplyLike.do") != -1){
+			countReplyLike(req, resp);
+		} else if (uri.indexOf("insertReplyAnswer.do") != -1){
+			insertReplyAnswer(req, resp);
+		} else if (uri.indexOf("listReplyAnswer.do") != -1){
+			listReplyAnswer(req, resp);
+		} else if (uri.indexOf("deleteReplyAnswer.do") != -1){
+			deleteReplyAnswer(req, resp);
+		} else if (uri.indexOf("countReplyAnswer.do") != -1){
+			countReplyAnswer(req, resp);
 		}
 	}
 	
@@ -65,9 +90,6 @@ public class PhotoServlet extends MyUploadServlet {
 		// 게시물 리스트
 		PhotoDAO dao = new PhotoDAO();
 		MyUtil util = new MyUtil();
-		
-		HttpSession session = req.getSession();
-		SessionInfo info = (SessionInfo) session.getAttribute("member");
 		
 		String cp = req.getContextPath();
 		
@@ -117,8 +139,6 @@ public class PhotoServlet extends MyUploadServlet {
 		
 		String cp = req.getContextPath();
 		
-		String page = req.getParameter("page");
-		
 		if(!info.getUserId().equals("admin")) {
 			resp.sendRedirect(cp + "/photo/list.do");
 			return;
@@ -130,9 +150,6 @@ public class PhotoServlet extends MyUploadServlet {
 	private void writeSubmit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		// 게시물 저장
 		PhotoDAO dao = new PhotoDAO();
-		
-		HttpSession session = req.getSession();
-		SessionInfo info = (SessionInfo) session.getAttribute("member");
 		
 		String cp = req.getContextPath();
 		if(req.getMethod().equalsIgnoreCase("GET")) {
@@ -349,5 +366,279 @@ public class PhotoServlet extends MyUploadServlet {
 			e.printStackTrace();
 		}
 		resp.sendRedirect(cp + "/photo/list.do?page="+page);
+	}
+	
+	// AJAX - JSON
+	private void insertPhotoLike(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 게시글 공감 저장
+		PhotoDAO dao = new PhotoDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
+		
+		String state = "false";
+		int photoLikeCount = 0;
+		
+		try {
+			int num = Integer.parseInt(req.getParameter("num"));
+			String isNoLike = req.getParameter("isNoLike");
+			
+			if(isNoLike.equals("true")) {
+				dao.insertPhotoLike(num, info.getUserId()); // 좋아요 추가
+			} else {
+				dao.deletePhotoLike(num, info.getUserId()); // 좋아요 취소
+			}
+			photoLikeCount = dao.countPhotoLike(num); // 좋아요 갯수
+			
+			state = "true";
+		} catch (SQLException e) {
+			if(e.getErrorCode() == 1) { // 좋아요 두 번 누른 경우
+				state = "failLike";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JSONObject job = new JSONObject();
+		job.put("state", state);
+		job.put("photoLikeCount", photoLikeCount);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
+	}
+	
+	// AJAX - JSON
+	protected void insertReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글 저장
+		PhotoDAO dao = new PhotoDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
+		
+		String state = "false";
+		try {
+			ReplyDTO dto = new ReplyDTO();
+			
+			int num = Integer.parseInt(req.getParameter("num"));
+			dto.setNum(num);
+			dto.setUserId(info.getUserId());
+			dto.setContent(req.getParameter("content"));
+			String answer = req.getParameter("answer");
+			if(answer != null) {
+				dto.setAnswer(Integer.parseInt(answer));
+			}
+			dao.insertReply(dto);
+			
+			state = "true";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JSONObject job = new JSONObject();
+		job.put("state", state);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
+	}
+	
+	// AJAX - Text
+	protected void listReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글 리스트
+		PhotoDAO dao = new PhotoDAO();
+		MyUtil util = new MyUtil();
+		
+		try {
+			int num = Integer.parseInt(req.getParameter("num"));
+			String pageNo = req.getParameter("pageNo");
+			int current_page = 1;
+			if(pageNo != null) {
+				current_page = Integer.parseInt(pageNo);
+			}
+			int rows = 5;
+			int total_page = 0;
+			int replyCount = 0;
+			
+			replyCount = dao.dataCountReply(num);
+			total_page = util.pageCount(rows, replyCount);
+			if(current_page > total_page) {
+				current_page = total_page;
+			}
+			int start = (current_page - 1) * rows + 1;
+			int end = current_page * rows;
+			
+			List<ReplyDTO> listReply = dao.listReply(num, start, end);
+			
+			for(ReplyDTO dto : listReply) {
+				dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+			}
+			
+			String paging = util.pagingMethod(current_page, total_page, "listPage");
+			
+			req.setAttribute("listReply", listReply);
+			req.setAttribute("pageNo", current_page);
+			req.setAttribute("replyCount", replyCount);
+			req.setAttribute("total_page", total_page);
+			req.setAttribute("paging", paging);
+			
+			forward(req, resp, "/WEB-INF/saem/gallery/listReply.jsp");
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		resp.sendError(405);
+	}
+	
+	// AJAX - JSON
+	protected void deleteReply(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글 삭제
+		PhotoDAO dao = new PhotoDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
+		String state = "false";
+		
+		try {
+			int replyNum = Integer.parseInt(req.getParameter("replyNum"));
+			dao.deleteReply(replyNum, info.getUserId());
+			state = "true";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JSONObject job = new JSONObject();
+		job.put("state", state);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
+	}
+	
+	protected void insertReplyLike(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글 좋아요/싫어요 추가
+		PhotoDAO dao = new PhotoDAO();
+		
+		HttpSession session = req.getSession();
+		SessionInfo info = (SessionInfo)session.getAttribute("member");
+		
+		String state = "false";
+		int likeCount = 0;
+		int disLikeCount = 0;
+		
+		try {
+			int replyNum = Integer.parseInt(req.getParameter("replyNum"));
+			int replyLike = Integer.parseInt(req.getParameter("replyLike"));
+			
+			ReplyDTO dto = new ReplyDTO();
+			
+			dto.setReplyNum(replyNum);
+			dto.setUserId(info.getUserId());
+			dto.setReplyLike(replyLike);
+			
+			dao.insertReplyLike(dto);
+			
+			Map<String, Integer> map = dao.countReplyLike(replyNum);
+			if(map.containsKey("likeCount")) {
+				likeCount = map.get("likeCount");
+			}
+			if(map.containsKey("disLikeCount")) {
+				disLikeCount = map.get("disLikeCount");
+			}
+			state = "true";
+		} catch (SQLException e) {
+			if(e.getErrorCode() == 1) {
+				state = "liked";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JSONObject job = new JSONObject();
+		job.put("state", state);
+		job.put("likeCount", likeCount);
+		job.put("disLikeCount", disLikeCount);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
+	}
+	
+	protected void countReplyLike(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글 좋아요/싫어요 갯수
+		PhotoDAO dao = new PhotoDAO();
+		
+		int likeCount = 0;
+		int disLikeCount = 0;
+
+		try {
+			int replyNum = Integer.parseInt(req.getParameter("replyNum"));
+			Map<String, Integer> map = dao.countReplyLike(replyNum);
+
+			if (map.containsKey("likeCount")) {
+				likeCount = map.get("likeCount");
+			}
+
+			if (map.containsKey("disLikeCount")) {
+				disLikeCount = map.get("disLikeCount");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		JSONObject job = new JSONObject();
+		job.put("likeCount", likeCount);
+		job.put("disLikeCount", disLikeCount);
+
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
+	}
+	
+	// AJAX - JSON
+	protected void insertReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글의 답글 저장
+		insertReply(req, resp);
+	}
+	
+	// AJAX - Text(HTML)
+	protected void listReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글의 답글 리스트
+		PhotoDAO dao = new PhotoDAO();
+		try {
+			int answer = Integer.parseInt(req.getParameter("answer"));
+			List<ReplyDTO> listReplyAnswer = dao.listReplyAnswer(answer);
+			for(ReplyDTO dto : listReplyAnswer) {
+				dto.setContent(dto.getContent().replaceAll("\n", "<br>"));
+			}
+			req.setAttribute("listReplyAnswer", listReplyAnswer);
+			forward(req, resp, "/WEB-INF/saem/gallery/listReplyAnswer.jsp");
+			return;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		resp.sendError(405);
+	}
+	
+	// AJAX - JSON
+	protected void deleteReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글의 답글 삭제
+		deleteReply(req, resp);
+	}
+	
+	// AJAX - JSON
+	protected void countReplyAnswer(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// 댓글의 답글 갯수
+		PhotoDAO dao = new PhotoDAO();
+		int count = 0;
+		
+		try {
+			int answer = Integer.parseInt(req.getParameter("answer"));
+			count = dao.dataCountReplyAnswer(answer);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JSONObject job = new JSONObject();
+		job.put("count", count);
+		
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(job.toString());
 	}
 }

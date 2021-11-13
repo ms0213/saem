@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import saem.util.DBConn;
 
@@ -15,17 +17,36 @@ public class ReviewDAO {
 	public int insertReview(ReviewDTO dto) throws SQLException {
 		int result = 0;
 		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		String sql;
+		int seq;
 
 		try {
-			sql = "insert into review(num, userId, subject, content, hitCount, reg_date, gdsNum) "
-					+ " values (bbs_seq.nextval, ?, ?, ?, 0, SYSDATE, ?)";
+			sql = "select review_seq.nextval from dual";
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, dto.getUserId());
-			pstmt.setString(2, dto.getSubject());
-			pstmt.setString(3, dto.getContent());
-			pstmt.setInt(4, dto.getGdsNum());
+			rs = pstmt.executeQuery();
+			
+			seq = 0;
+			if(rs.next()) {
+				seq = rs.getInt(1);
+			}
+			dto.setNum(seq);
+			
+			rs.close();
+			pstmt.close();
+			rs = null;
+			pstmt = null;
+			
+			sql = "insert into review(num, userId, subject, content, hitCount, reg_date, gdsNum ) "
+					+ " values (?, ?, ?, ?, 0, SYSDATE, ?)";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, dto.getNum());
+			pstmt.setString(2, dto.getUserId());
+			pstmt.setString(3, dto.getSubject());
+			pstmt.setString(4, dto.getContent());
+			pstmt.setInt(5, dto.getGdsNum());
 
 			result = pstmt.executeUpdate();
 			
@@ -144,7 +165,7 @@ public class ReviewDAO {
 	}
 
 	// 게시물 리스트
-	public List<ReviewDTO> listReview(int start, int end) {
+	public List<ReviewDTO> listReview(int gdsNum, int start, int end) {
 		List<ReviewDTO> list = new ArrayList<ReviewDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -153,18 +174,24 @@ public class ReviewDAO {
 		try {
 			sb.append(" select * from ( ");
 			sb.append("     select rownum rnum, tb.* from ( ");
-			sb.append("         select num, userName, subject, hitCount, ");
-			sb.append("               to_char(reg_date, 'YYYY-MM-DD') reg_date, gdsNum ");
+			sb.append("         select r.num, userName, subject, hitCount, ");
+			sb.append("               to_char(reg_date, 'YYYY-MM-DD') reg_date, nvl(replyCount, 0) replyCount, gdsNum ");
 			sb.append("         from review r ");
 			sb.append("         join member1 m on r.userId = m.userId ");
+			sb.append("			left outer join ( ");
+			sb.append("				select num, count(*) replyCount from reviewReply where answer = 0 ");
+			sb.append("				group by num ");
+			sb.append("			) c on r.num = c.num");
+			sb.append("			where r.gdsNum = ? ");
 			sb.append("         order by num desc ");
 			sb.append("     ) tb where rownum <= ? ");
 			sb.append(" ) where rnum >= ? ");
 
 			pstmt = conn.prepareStatement(sb.toString());
 			
-			pstmt.setInt(1, end);
-			pstmt.setInt(2, start);
+			pstmt.setInt(1, gdsNum);
+			pstmt.setInt(2, end);
+			pstmt.setInt(3, start);
 
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -175,8 +202,8 @@ public class ReviewDAO {
 				dto.setSubject(rs.getString("subject"));
 				dto.setHitCount(rs.getInt("hitCount"));
 				dto.setReg_date(rs.getString("reg_date"));
-				dto.setGdsNum(rs.getInt("gdsNum"));
-
+				dto.setReplyCount(rs.getInt("replyCount"));
+				;
 				list.add(dto);
 			}
 
@@ -210,7 +237,7 @@ public class ReviewDAO {
 			sb.append(" select * from ( ");
 			sb.append("     select rownum rnum, tb.* from ( ");
 			sb.append("         select num, userName, subject, hitCount, ");
-			sb.append("               to_char(reg_date, 'YYYY-MM-DD') reg_date ");
+			sb.append("               to_char(reg_date, 'YYYY-MM-DD') reg_date, nvl(replyCount, 0) replyCount ");
 			sb.append("         from review r ");
 			sb.append("         join member1 m on r.userId = m.userId ");
 			if (condition.equals("all")) {
@@ -221,6 +248,10 @@ public class ReviewDAO {
 			} else {
 				sb.append("     where instr(" + condition + ", ?) >= 1 ");
 			}
+			sb.append("			left outer join ( ");
+			sb.append("				select num, count(*) replyCount from reviewReply where answer = 0 ");
+			sb.append("				group by num ");
+			sb.append("			) c on r.num = c.num");
 			sb.append("         order by num desc ");
 			sb.append("     ) tb where rownum <= ? ");
 			sb.append(" ) where rnum >= ? ");
@@ -247,7 +278,7 @@ public class ReviewDAO {
 				dto.setSubject(rs.getString("subject"));
 				dto.setHitCount(rs.getInt("hitCount"));
 				dto.setReg_date(rs.getString("reg_date"));
-				dto.setGdsNum(rs.getInt("gdsNum"));
+				dto.setReplyCount(rs.getInt("replyCount"));
 
 				list.add(dto);
 			}
@@ -307,10 +338,15 @@ public class ReviewDAO {
 		String sql;
 
 		try {
-			sql = "select num, r.userId, userName, subject, content, reg_date, hitCount "
-					+ " FROM review r "
+			sql = "select r.num, r.userId, userName, subject, content, reg_date, hitCount, "
+					+ "		nvl(reviewLikeCount, 0) reviewLikeCount "
+					+ " from review r "
 					+ " join member1 m on r.userId=m.userId "
-					+ " WHERE num = ? ";
+					+ " left outer join ("
+					+ "      select num, count(*) reviewLikeCount from reviewLike"
+					+ "      group by num"
+					+ " ) rl on r.num = rl.num"
+					+ " where r.num = ? ";
 			pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setInt(1, num);
@@ -327,6 +363,7 @@ public class ReviewDAO {
 				dto.setContent(rs.getString("content"));
 				dto.setHitCount(rs.getInt("hitCount"));
 				dto.setReg_date(rs.getString("reg_date"));
+				dto.setReviewLikeCount(rs.getInt("reviewLikeCount"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -347,6 +384,41 @@ public class ReviewDAO {
 		}
 
 		return dto;
+	}
+	
+	public boolean isUserReviewLike(int num, String userId) {
+		boolean result = false;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "select num, userId from reviewLike where num = ? and userId = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			pstmt.setString(2, userId);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				result = true;
+			}
+ 		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (Exception e2) {
+				}
+			}
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
+		return result;
 	}
 	
 	public int updateReview(ReviewDTO dto) throws SQLException {
@@ -682,5 +754,468 @@ public class ReviewDAO {
 			}
 		}
 		return result;
+	}
+	public int insertReviewLike(int num, String userId) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "insert into reviewLike(num, userId) values (?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, num);
+			pstmt.setString(2, userId);
+			
+			result = pstmt.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		return result;
+	}
+	
+	public int deleteReviewLike(int num, String userId) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "delete from reviewLike where num = ? and userId = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, num);
+			pstmt.setString(2, userId);
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		return result;
+	}
+	
+	public int countReviewLike(int num) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "select nvl(count(*),0) from reviewLike where num=?";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, num);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (Exception e2) {
+				}
+			}
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public int insertReply(ReplyDTO dto) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "insert into reviewReply(replyNum, num, userId, content, answer, reg_date) values (reviewReply_seq.nextval, ?, ?, ?, ?, sysdate)";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, dto.getNum());
+			pstmt.setString(2, dto.getUserId());
+			pstmt.setString(3, dto.getContent());
+			pstmt.setInt(4, dto.getAnswer());
+			
+			result = pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public int dataCountReply(int num) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "select nvl(count(*),0) from reviewReply where num = ? and answer = 0";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, num);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(rs!=null) {
+				try {
+					rs.close();
+				} catch (Exception e2) {
+				}
+			}
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public List<ReplyDTO> listReply(int num, int start, int end) {
+		List<ReplyDTO> list = new ArrayList<>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		StringBuilder sb = new StringBuilder();
+		
+		try {
+			sb.append(" select * from ( ");
+			sb.append(" 	select rownum rnum, tb.* from ( ");
+			sb.append(" 		select r.replyNum, r.userId, userName, num, content, r.reg_date, ");
+			sb.append(" 			nvl(answerCount, 0) answerCount, ");
+			sb.append(" 			nvl(likeCount, 0) likeCount, ");
+			sb.append(" 			nvl(disLikeCount, 0) disLikeCount ");
+			sb.append(" 		from reviewReply r ");
+			sb.append(" 		join member1 m on r.userId = m.userId ");
+			sb.append(" 		left outer join ( ");
+			sb.append(" 			select answer, count(*) answerCount ");
+			sb.append(" 			from reviewReply where answer != 0 ");
+			sb.append(" 			group by answer ");
+			sb.append(" 		) a on r.replyNum = a.answer ");
+			sb.append(" 		left outer join ( ");
+			sb.append(" 			select replyNum, ");
+			sb.append(" 				count(decode(replyLike, 1, 1)) likeCount, ");
+			sb.append(" 				count(decode(replyLike, 0, 1)) disLikeCount ");
+			sb.append(" 			from reviewReplyLike group by replyNum ");
+			sb.append(" 		) b on r.replyNum = b.replyNum ");
+			sb.append(" 		where num = ? and r.answer = 0 ");
+			sb.append(" 		order by r.replyNum asc ");
+			sb.append(" 	) tb where rownum <= ? ");
+			sb.append(" ) where rnum >= ? ");
+			
+			pstmt = conn.prepareStatement(sb.toString());
+			pstmt.setInt(1, num);
+			pstmt.setInt(2, end);
+			pstmt.setInt(3, start);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next() ) {
+				ReplyDTO dto = new ReplyDTO();
+				
+				dto.setReplyNum(rs.getInt("replyNum"));
+				dto.setNum(rs.getInt("num"));
+				dto.setUserId(rs.getString("userId"));
+				dto.setUserName(rs.getString("userName"));
+				dto.setContent(rs.getString("content"));
+				dto.setReg_date(rs.getString("reg_date"));
+				dto.setAnswerCount(rs.getInt("answerCount"));
+				dto.setLikeCount(rs.getInt("likeCount"));
+				dto.setDisLikeCount(rs.getInt("disLikeCount"));
+				
+				list.add(dto);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		
+		return list;
+	}
+	
+	public ReplyDTO readReply(int replyNum) {
+		ReplyDTO dto = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "select replyNum, num, r.userId, userName, content, r.reg_date "
+					+ " from reviewReply r join member1 m on r.userId = m.userId "
+					+ " where replyNum = ? ";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, replyNum);
+			
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				dto = new ReplyDTO();
+				
+				dto.setReplyNum(rs.getInt("replyNum"));
+				dto.setNum(rs.getInt("num"));
+				dto.setUserId(rs.getString("userId"));
+				dto.setUserName(rs.getString("userName"));
+				dto.setContent(rs.getString("content"));
+				dto.setReg_date(rs.getString("reg_date"));
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+				
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		
+		return dto;
+	}
+	
+	public int deleteReply(int replyNum, String userId) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		if(! userId.equals("admin")) {
+			ReplyDTO dto = readReply(replyNum);
+			if(dto == null || (!userId.equals(dto.getUserId()))) {
+				return result;
+			}
+		}
+		
+		try {
+			sql = "delete from reviewReply where replyNum in (select replyNum from reviewReply start with replyNum = ?"
+					+ " connect by prior replyNum = answer)";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, replyNum);
+			
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public List<ReplyDTO> listReplyAnswer(int answer) {
+		List<ReplyDTO> list = new ArrayList<>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		StringBuilder sb = new StringBuilder();
+		
+		try {
+			sb.append(" select replyNum, num, r.userId, userName, content, reg_date, answer ");
+			sb.append(" from reviewReply r ");
+			sb.append(" join member1 m on r.userId = m.userId ");
+			sb.append(" where answer = ?");
+			sb.append(" order by replyNum asc ");
+			pstmt = conn.prepareStatement(sb.toString());
+			
+			pstmt.setInt(1, answer);
+			
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()) {
+				ReplyDTO dto = new ReplyDTO();
+				
+				dto.setReplyNum(rs.getInt("replyNum"));
+				dto.setNum(rs.getInt("num"));
+				dto.setUserId(rs.getString("userId"));
+				dto.setUserName(rs.getString("userName"));
+				dto.setContent(rs.getString("content"));
+				dto.setReg_date(rs.getString("reg_date"));
+				dto.setAnswer(rs.getInt("answer"));
+				
+				list.add(dto);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+				
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		
+		return list;
+	}
+	
+	public int dataCountReplyAnswer(int answer) {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "select nvl(count(*), 0) from reviewReply where answer = ?";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, answer);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				result = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public int insertReplyLike(ReplyDTO dto) throws SQLException {
+		int result = 0;
+		PreparedStatement pstmt = null;
+		String sql;
+		
+		try {
+			sql = "insert into reviewReplyLike(replyNum, userId, replyLike) values (?, ?, ?)";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, dto.getReplyNum());
+			pstmt.setString(2, dto.getUserId());
+			pstmt.setInt(3, dto.getReplyLike());
+			result = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			if(pstmt != null) {
+				try {
+					pstmt.close();
+				} catch (Exception e2) {
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	public Map<String, Integer> countReplyLike(int replyNum) {
+		Map<String, Integer> map = new HashMap<>();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql;
+		
+		try {
+			sql = "select count(decode(replyLike, 1, 1)) likeCount, "
+					+ " count(decode(replyLike, 0, 1)) disLikeCount "
+					+ " from reviewReplyLike where replyNum = ? ";
+			pstmt = conn.prepareStatement(sql);
+			
+			pstmt.setInt(1, replyNum);
+			
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				map.put("likeCount", rs.getInt("likeCount"));
+				map.put("disLikeCount", rs.getInt("disLikeCount"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			if(rs != null) {
+				try {
+					rs.close();
+				} catch (SQLException e) {
+				}
+			}
+			if(pstmt!=null) {
+				try {
+					pstmt.close();
+				} catch (SQLException e) {
+				}
+			}
+		}
+		
+		return map;
 	}
 }

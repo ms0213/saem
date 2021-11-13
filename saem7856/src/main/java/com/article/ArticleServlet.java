@@ -3,6 +3,8 @@ package com.article;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -84,8 +86,27 @@ public class ArticleServlet extends MyUploadServlet{
 				current_page = Integer.parseInt(page);
 			}
 			
+			// 검색
+			String condition = req.getParameter("condition");
+			String keyword = req.getParameter("keyword");
+			
+			if (condition == null) {
+				condition = "all";
+				keyword="";
+			}
+			
+			// GET 방식일때 디코딩
+			if (req.getMethod().equalsIgnoreCase("GET")) {
+				keyword = URLDecoder.decode(keyword, "utf-8");
+			}
+			
 			// 전체 데이터 개수
-			int dataCount = dao.dataCount();
+			int dataCount;
+			if(keyword.length()==0) {
+				dataCount = dao.dataCount();
+			} else {
+				dataCount = dao.DataCount(condition, keyword);
+			}
 			
 			// 전체 페이지 수
 			int rows = 10;
@@ -99,11 +120,25 @@ public class ArticleServlet extends MyUploadServlet{
 			int end = current_page * rows;
 			
 			// 게시물 가져오기
-			List<ArticleDTO> list = dao.listArticle(start, end);
+			List<ArticleDTO> list = null;
+			if(keyword.length()==0) {
+				list = dao.listArticle(start, end);
+			} else {
+				list = dao.listArticle(start, end, condition, keyword);
+			}
+			
+			String query="";
+			if(keyword.length()!=0) {
+				query = "condition="+condition+"&keyword="+URLEncoder.encode(keyword,"utf-8");
+			}
 			
 			// 페이징 처리
 			String listUrl = cp + "/article/list.do";
 			String articleUrl = cp + "/article/article.do?page=" + current_page;
+			if(query.length()!=0) {
+				listUrl += "?" + query;
+				articleUrl += "&" + query;
+			}
 			String paging = util.paging(current_page, total_page, listUrl);
 			
 			req.setAttribute("list", list);
@@ -112,6 +147,8 @@ public class ArticleServlet extends MyUploadServlet{
 			req.setAttribute("page",  current_page);
 			req.setAttribute("total_page", total_page);
 			req.setAttribute("paging", paging);
+			req.setAttribute("condition", condition);
+			req.setAttribute("keyword", keyword);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -190,7 +227,17 @@ public class ArticleServlet extends MyUploadServlet{
 		
 		try {
 			int num = Integer.parseInt(req.getParameter("num"));
+			String condition = req.getParameter("condition");
+			String keyword = req.getParameter("keyword");
+			if( condition == null ) {
+				condition = "all";
+				keyword = "";
+			}
+			keyword = URLDecoder.decode(keyword, "utf-8");
 			
+			if (keyword.length() != 0) {
+				query += "&condition=" + condition + "&keyword=" + URLEncoder.encode(keyword, "UTF-8");
+			}
 			dao.updateHitCount(num); // 조회수
 			
 			ArticleDTO dto = dao.readArticle(num);
@@ -208,8 +255,8 @@ public class ArticleServlet extends MyUploadServlet{
 				dao.isUserArticleLike(num, info.getUserId());
 			}
 			// 이전글, 다음 글
-			ArticleDTO preReadDto = dao.preReadArticle(dto.getNum());
-			ArticleDTO nextReadDto = dao.nextReadArticle(dto.getNum());
+			ArticleDTO preReadDto = dao.preReadArticle(dto.getNum(), condition, keyword);
+			ArticleDTO nextReadDto = dao.nextReadArticle(dto.getNum(), condition, keyword);
 			
 			req.setAttribute("dto", dto);
 			req.setAttribute("page", page);
@@ -312,18 +359,30 @@ public class ArticleServlet extends MyUploadServlet{
 		
 		String cp = req.getContextPath();
 		String page = req.getParameter("page");
+		String query = "page=" + page;
 		
 		try {
 			int num = Integer.parseInt(req.getParameter("num"));
+			String condition = req.getParameter("condition");
+			String keyword = req.getParameter("keyword");
+			if(condition == null) {
+				condition = "all";
+				keyword = "";
+			}
+			keyword = URLDecoder.decode(keyword,"utf-8");
+			
+			if (keyword.length() != 0) {
+				query += "&condition=" + condition + "&keyword=" + URLEncoder.encode(keyword, "UTF-8");
+			}
 			
 			ArticleDTO dto = dao.readArticle(num);
 			if (dto == null) {
-				resp.sendRedirect(cp + "/article/list.do?page=" + page);
+				resp.sendRedirect(cp + "/article/list.do?page="+page);
 				return;
 			}
 			
 			if(!info.getUserId().equals("admin")) {
-				resp.sendRedirect(cp + "/notice/list.do");
+				resp.sendRedirect(cp + "/notice/list.do"+query);
 				return;
 			}
 			
