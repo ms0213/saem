@@ -83,7 +83,6 @@
 		var params = new URLSearchParams(search);
 		var getGdsNum = params.get('num');
 		$('input[name=gdsNum]').attr('value', getGdsNum);
-		console.log(getGdsNum);
 
 		f.action = "${pageContext.request.contextPath}/review/${mode}_ok.do";
 		f.submit();
@@ -101,7 +100,6 @@
 		location.href = url;
 	}
 	</c:if>
-	
 </script>
 </head>
 <body class="is-preload">

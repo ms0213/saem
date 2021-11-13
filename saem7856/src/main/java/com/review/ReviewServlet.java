@@ -230,8 +230,8 @@ req.setCharacterEncoding("utf-8");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		resp.sendRedirect(cp + "/review/list.do");
+		
+		resp.sendRedirect(cp + "/review/list.do?num="+req.getParameter("gdsNum"));
 	}
 
 	private void article(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
