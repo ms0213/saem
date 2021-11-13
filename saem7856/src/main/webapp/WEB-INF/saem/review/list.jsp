@@ -55,7 +55,7 @@ function searchList() {
 								<!-- Search -->
 								<section id="search" class="alt">
 									<form method="post" class="search_wrapper" 
-									name="searchForm" action="${pageContext.request.contextPath}/review/list.do">
+									name="searchForm" action="${pageContext.request.contextPath}/review/list.do?page=${page}&num=${dto.num}">
 										<select name="condition" style="width:60%">
 											<option value="all"      ${condition=="all"?"selected='selected'":"" }>제목+내용</option>
 											<option value="userName" ${condition=="userName"?"selected='selected'":"" }>작성자</option>

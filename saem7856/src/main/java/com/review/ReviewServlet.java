@@ -131,7 +131,7 @@ req.setCharacterEncoding("utf-8");
 
 			int start = (current_page - 1) * rows + 1;
 			int end = current_page * rows;
-			int gdsNum = Integer.parseInt(req.getParameter("gdsNum"));
+			int gdsNum = Integer.parseInt(req.getParameter("num"));
 			
 			// 게시물 가져오기
 			List<ReviewDTO> list = null;
@@ -148,13 +148,14 @@ req.setCharacterEncoding("utf-8");
 				dto.setListNum(listNum);
 				n++;
 			}
-
-			String query = "";
+			
+			String query = "num="+gdsNum;
 			if (keyword.length() != 0) {
 				query = "condition=" + condition + "&keyword=" + URLEncoder.encode(keyword, "utf-8");
 			}
 
 			// 페이징 처리
+			
 			String listUrl = cp + "/review/list.do";
 			String articleUrl = cp + "/review/article.do?page=" + current_page;
 			if (query.length() != 0) {
@@ -231,7 +232,14 @@ req.setCharacterEncoding("utf-8");
 			e.printStackTrace();
 		}
 		
-		resp.sendRedirect(cp + "/review/list.do?num="+req.getParameter("gdsNum"));
+		String page = req.getParameter("page");
+		int current_page = 1;
+		if (page != null) {
+			current_page = Integer.parseInt(page);
+		}
+		
+		String query = "&page=" + current_page;
+		resp.sendRedirect(cp + "/review/list.do?num="+req.getParameter("gdsNum")+query);
 	}
 
 	private void article(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

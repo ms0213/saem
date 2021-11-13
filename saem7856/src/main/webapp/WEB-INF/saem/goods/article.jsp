@@ -82,7 +82,7 @@
 	
 	function sendList() {
 		var f = document.sendForm;
-		f.action = "${pageContext.request.contextPath}/review/list.do?num=${dto.num}";
+		f.action = "${pageContext.request.contextPath}/review/list.do?num=${dto.num}&page=${page}";
 		f.submit();
 	}
 	
