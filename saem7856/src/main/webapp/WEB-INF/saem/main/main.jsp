@@ -13,11 +13,18 @@
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp"/>
 <style type="text/css">
 .content .item {
-	border: 1px solid #DAD9FF;  cursor: pointer;
+    cursor: pointer;
+	color: black; font-weight: bold; font-size: 20px;
+	
 }
 .features img {
-  width: 100%; height: 100%; cursor: pointer;
+  width: 200px; height: 300px; cursor: pointer;
 }
+
+.major {
+	padding-top: 100px;
+}
+
 </style>
 </head>
 <body class="is-preload">
@@ -35,7 +42,7 @@
 				</header>
 
 				<!-- Banner -->
-				<section id="banner">
+				<section id="banner" style="padding: 0;">
 					<video autoplay muted loop style="width: 100%; height: 100%;" class="content">
 						<!--크롬 자동 재생 정책으로 비디오 오디오 따로-->
 						<source src="./images/goal.mp4" type="video/webm">
@@ -45,6 +52,7 @@
 				<!-- Section -->
 				<section>
 					<header class="major">
+					<p style="border-top : solid 2px rgba(210, 215, 217, 0.75);"></p>
 						<h2>최신 기사!</h2>
 					</header>
 					<div class="features">

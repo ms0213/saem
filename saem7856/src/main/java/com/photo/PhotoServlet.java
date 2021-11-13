@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 
-import com.photo.ReplyDTO;
+
 import com.member.SessionInfo;
 
 import saem.util.FileManager;

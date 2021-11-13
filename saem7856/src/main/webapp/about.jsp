@@ -30,17 +30,18 @@
 	margin-bottom:30px;
 	flex-wrap:nowrap;
 	background-repeat: no-repeat ;
+	background-position: center center;
 	border : 1px solid gray;
 }
 
 .sections .section-image{
 	width:100%; 
-	height:180px; 
-	margin-bottom:25px;
+	height:100%; 
 }
 .right{
 	margin-right:5px;
 }
+
 </style>
 </head>
 <body class="is-preload">
@@ -74,7 +75,7 @@
 								<p>어쩌고</p>
 							</div>
 							<div class="sections right">
-								<div class="section-image" style="background:url('images/ye.png'); background-size: cover;"></div>
+								<div class="section-image" style="background:url('images/ye.png'); background-size: cover; "></div>
 								<h3>김예림</h3>
 								<p>어쩌고</p>
 							</div>
