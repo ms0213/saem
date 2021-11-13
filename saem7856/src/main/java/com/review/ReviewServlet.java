@@ -131,11 +131,12 @@ req.setCharacterEncoding("utf-8");
 
 			int start = (current_page - 1) * rows + 1;
 			int end = current_page * rows;
-
+			int gdsNum = Integer.parseInt(req.getParameter("gdsNum"));
+			
 			// 게시물 가져오기
 			List<ReviewDTO> list = null;
 			if (keyword.length() == 0) {
-				list = dao.listReview(start, end);
+				list = dao.listReview(gdsNum, start, end);
 			} else {
 				list = dao.listReview(start, end, condition, keyword);
 			}

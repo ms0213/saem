@@ -165,7 +165,7 @@ public class ReviewDAO {
 	}
 
 	// 게시물 리스트
-	public List<ReviewDTO> listReview(int start, int end) {
+	public List<ReviewDTO> listReview(int gdsNum, int start, int end) {
 		List<ReviewDTO> list = new ArrayList<ReviewDTO>();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -175,22 +175,23 @@ public class ReviewDAO {
 			sb.append(" select * from ( ");
 			sb.append("     select rownum rnum, tb.* from ( ");
 			sb.append("         select r.num, userName, subject, hitCount, ");
-			sb.append("               to_char(reg_date, 'YYYY-MM-DD') reg_date, nvl(replyCount, 0) replyCount ");
+			sb.append("               to_char(reg_date, 'YYYY-MM-DD') reg_date, nvl(replyCount, 0) replyCount, gdsNum ");
 			sb.append("         from review r ");
 			sb.append("         join member1 m on r.userId = m.userId ");
 			sb.append("			left outer join ( ");
 			sb.append("				select num, count(*) replyCount from reviewReply where answer = 0 ");
 			sb.append("				group by num ");
 			sb.append("			) c on r.num = c.num");
-			sb.append("");
+			sb.append("			where r.gdsNum = ? ");
 			sb.append("         order by num desc ");
 			sb.append("     ) tb where rownum <= ? ");
 			sb.append(" ) where rnum >= ? ");
 
 			pstmt = conn.prepareStatement(sb.toString());
 			
-			pstmt.setInt(1, end);
-			pstmt.setInt(2, start);
+			pstmt.setInt(1, gdsNum);
+			pstmt.setInt(2, end);
+			pstmt.setInt(3, start);
 
 			rs = pstmt.executeQuery();
 			while (rs.next()) {
@@ -202,7 +203,7 @@ public class ReviewDAO {
 				dto.setHitCount(rs.getInt("hitCount"));
 				dto.setReg_date(rs.getString("reg_date"));
 				dto.setReplyCount(rs.getInt("replyCount"));
-
+				;
 				list.add(dto);
 			}
 

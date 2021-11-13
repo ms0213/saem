@@ -79,6 +79,19 @@
 		/* ,paginationType : 'thumbnails' */// 아래부분에 작은 이미지 출력
 		});
 	});
+	
+	function sendList() {
+		var f = document.sendForm;
+		f.action = "${pageContext.request.contextPath}/review/list.do?num=${dto.num}";
+		f.submit();
+	}
+	
+	function sendWrite() {
+		var f = document.sendForm;
+		f.action = "${pageContext.request.contextPath}/review/write.do?num=${dto.num}";
+		f.submit();
+	}
+	
 </script>
 </head>
 
@@ -136,12 +149,16 @@
 									</c:choose>
 									<p style="text-align: center;">(사진을 클릭하면 새창으로 열립니다.)</p>
 									<p>${dto.content}</p>
-									<p style="text-align: center;">
-										<button type="button" class="btn"
-											onclick="location.href='${pageContext.request.contextPath}/review/list.do?gdsnum=${dto.num}';">리뷰보기</button>
-										<button type="button" class="btn"
-											onclick="location.href='${pageContext.request.contextPath}/review/write.do?gdsnum=${dto.num}';">리뷰쓰기</button>
-									</p></td>
+									<form name="sendForm" method="post" enctype="multipart/form-data">
+										<p style="text-align: center;">
+											<button type="button" class="btn"
+												onclick="sendList();">리뷰보기</button>
+											<button type="button" class="btn"
+												onclick="sendWrite();">리뷰쓰기</button>
+										</p>
+										<input type="hidden" name="gdsNum" value="${dto.num}">
+									</form>
+								</td>
 							</tr>
 							<tr>
 								<td colspan="2" style="background-color: white;">다음글 : <c:if

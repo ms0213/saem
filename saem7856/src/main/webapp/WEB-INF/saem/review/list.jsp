@@ -24,6 +24,7 @@ function searchList() {
 	var f = document.searchForm;
 	f.submit();
 }
+
 </script>
 </head>
 <body class="is-preload">
@@ -108,11 +109,7 @@ function searchList() {
 				</form>
 				<div class="page-box">
 					${dataCount == 0 ? "등록된 게시물이 없습니다." : paging}
-				</div>
-                <div style='padding: 0px 13px 10px 10px; text-align: right;'>
-                    <button type='button' onclick="location.href='${pageContext.request.contextPath}/review/write.do';">글쓰기</button>
-                </div>
-				
+				</div>	
 			</div>
 		</div>
 

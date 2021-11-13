@@ -56,7 +56,7 @@
 
 <script type="text/javascript">
 	function sendOk() {
-		var f = document.photoForm;
+		var f = document.reviewForm;
 		var str;
 
 		str = f.subject.value.trim();
@@ -79,6 +79,11 @@
 			f.selectFile.focus();
 			return;
 		}
+		var search = location.search
+		var params = new URLSearchParams(search);
+		var getGdsNum = params.get('num');
+		$('input[name=gdsNum]').attr('value', getGdsNum);
+		console.log(getGdsNum);
 
 		f.action = "${pageContext.request.contextPath}/review/${mode}_ok.do";
 		f.submit();
@@ -96,6 +101,7 @@
 		location.href = url;
 	}
 	</c:if>
+	
 </script>
 </head>
 <body class="is-preload">
@@ -113,13 +119,14 @@
 							</h3>
 						</div>
 
-						<form name="photoForm" method="post" enctype="multipart/form-data">
+						<form name="reviewForm" method="post" enctype="multipart/form-data">
 							<table class="table table-border table-form">
 								<tr>
 									<td>제&nbsp;&nbsp;&nbsp;&nbsp;목</td>
-									<td><input type="text" name="subject" maxlength="100"
-										class="boxTF" value="${dto.subject}">
-										<input type="hidden" name="gdsNum" value="${dto.gdsNum}"></td>
+									<td>
+										<input type="text" name="subject" maxlength="100"
+											class="boxTF" value="${dto.subject}">
+									</td>
 								</tr>
 								<tr>
 									<td>작성자</td>
@@ -167,6 +174,7 @@
 											<input type="hidden" name="num" value="${dto.num}">
 											<input type="hidden" name="page" value="${page}">
 										</c:if>
+										<input type="hidden" name="gdsNum" value="">
 									</td>
 								</tr>
 							</table>
