@@ -43,6 +43,7 @@
 						<li><a href="${pageContext.request.contextPath}/photo/write.do">사진 등록</a></li>
 						<li><a href="${pageContext.request.contextPath}/article/write.do">기사 등록</a></li>
 						<li><a href="${pageContext.request.contextPath}/player/write.do">선수 등록</a></li>
+						<li><a href="${pageContext.request.contextPath}/contact/list.do">건의 관리</a></li>
 					</ul></li>
 				</c:if>	
 			</ul>
