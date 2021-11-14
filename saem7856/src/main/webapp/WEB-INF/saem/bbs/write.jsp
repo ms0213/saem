@@ -65,8 +65,8 @@ function sendOk() {
 				</header>
 				<main>
 	<div class="body-container">
-		<div class="body-title">
-			<h3><i class="fas fa-chalkboard"></i> 게시판 </h3>
+		<div class="body-title" style="padding-top: 50px;">
+			<h3 style="font-size: 2.25em; font-weight: bold;"><i class="fas fa-chalkboard"></i> 자유 게시판 </h3>
 		</div>
         
 		<form name="boardForm" method="post">

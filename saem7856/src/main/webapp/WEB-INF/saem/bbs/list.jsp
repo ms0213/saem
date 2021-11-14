@@ -47,12 +47,6 @@
 								<i class="fas fa-chalkboard"></i> 자유 게시판
 							</h1>
 						</div>
-						<table>
-							<tr>
-								<td width="50%">${dataCount}개(${page}/${total_page}페이지)</td>
-								<td align="right">&nbsp;</td>
-							</tr>
-						</table>
 						<table class="table">
 							<tr>
 
@@ -109,9 +103,17 @@
 									<td>${dto.hitCount}</td>
 								</tr>
 							</c:forEach>
-
-
 						</table>
+						
+						<table>
+							<tr>
+								<td width="10%">${dataCount}개(${page}/${total_page}페이지)</td>
+								
+								<td align="left">${dataCount == 0 ? "등록된 게시물이 없습니다." : paging}</td>
+								<td width="10%"></td>
+							</tr>
+						</table>
+						
 						<div style='padding: 10px 13px 10px 10px; float: left;'>
 							<button type="button"
 								onclick="location.href='${pageContext.request.contextPath}/bbs/list.do';">새로고침</button>
@@ -131,10 +133,11 @@
 							</c:choose>
 						</div>
 
-						<div class="page-box" style="padding-bottom: 200px;">${dataCount == 0 ? "등록된 게시물이 없습니다." : paging}
-						</div>
+					
 					</div>
+					
 				</main>
+				
 			</div>
 		</div>
 		<div id="sidebar">

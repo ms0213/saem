@@ -16,15 +16,17 @@
 	margin-bottom: 5px;
 	display: grid;
 	/* auto-fill :  남는 공간(빈 트랙)을 그대로 유지, minmax : '최소, 최대 크기'를 정의 */
-	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-	grid-column-gap: 10px;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 2fr));
+	grid-column-gap: 70px;
 	grid-row-gap: 10px;
 }
 
 .grid-box .item {
 	border: 1px solid #DAD9FF;
-	height: 230px;
+	height: 330px;
+	width: 280px;
 	cursor: pointer;
+	align-items: center;
 }
 
 .item>img {
@@ -48,10 +50,10 @@
 				</header>
 				<main>
 
-					<div class="body-container" style="width: 800px;">
-						<div class="body-title">
-							<h3>
-								<i class="fas fa-futbol"></i> 선수 정보
+					<div class="body-container">
+						<div class="body-title" style="padding-top: 50px;">
+							<h3 style="font-size: 2.25em; font-weight: bold;">
+								<i class="fas fa-futbol" ></i> 선수 정보
 							</h3>
 						</div>
 
@@ -59,28 +61,28 @@
 
 						<table class="table">
 							<tr>
-								<td align="left">EPL</td>
+								<td align="left" style="font-weight: bold;">EPL</td>
 
 							</tr>
 						</table>
 
 						<div class="grid-box"
-							style="padding-top: 5px; padding-bottom: 80px;">
+							style="padding-top: 5px; padding-bottom: 80px; justify-items: center;" >
 							<c:forEach var="dto" items="${list}" varStatus="status">
 								<c:if test="${dto.league=='EPL'}">
 									<div class="item" title="${dto.subject}"
 										onclick="location.href='${articleUrl}&num=${dto.num}';">
 										<img
 											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
-										<p style="text-align: center; height: 0;">${dto.subject}</p>
-										<p style="text-align: center; height: 0;">${dto.team}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.subject}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.team}</p>
 									</div>
 								</c:if>
 							</c:forEach>
 						</div>
 						<table class="table" style="padding: 5px auto;">
 							<tr>
-								<td align="left">La Liga</td>
+								<td align="left" style="font-weight: bold;">La Liga</td>
 							</tr>
 						</table>
 						<div class="grid-box"
@@ -91,8 +93,8 @@
 										onclick="location.href='${articleUrl}&num=${dto.num}';">
 										<img
 											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
-										<p style="text-align: center; height: 0;">${dto.subject}</p>
-										<p style="text-align: center; height: 0;">${dto.team}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.subject}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.team}</p>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -100,7 +102,7 @@
 
 						<table class="table">
 							<tr>
-								<td align="left">분데스리가</td>
+								<td align="left" style="font-weight: bold;">분데스리가</td>
 							</tr>
 						</table>
 						<div class="grid-box"
@@ -111,8 +113,8 @@
 										onclick="location.href='${articleUrl}&num=${dto.num}';">
 										<img
 											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
-										<p style="text-align: center; height: 0;">${dto.subject}</p>
-										<p style="text-align: center; height: 0;">${dto.team}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.subject}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.team}</p>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -120,7 +122,7 @@
 
 						<table class="table">
 							<tr>
-								<td align="left">리그1</td>
+								<td align="left" style="font-weight: bold;">리그1</td>
 
 							</tr>
 						</table>
@@ -132,8 +134,8 @@
 										onclick="location.href='${articleUrl}&num=${dto.num}';">
 										<img
 											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
-										<p style="text-align: center; height: 0;">${dto.subject}</p>
-										<p style="text-align: center; height: 0;">${dto.team}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.subject}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.team}</p>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -141,7 +143,7 @@
 
 						<table class="table">
 							<tr>
-								<td align="left">러시아 프리미어리그</td>
+								<td align="left" style="font-weight: bold;">러시아 프리미어리그</td>
 
 							</tr>
 						</table>
@@ -153,8 +155,8 @@
 										onclick="location.href='${articleUrl}&num=${dto.num}';">
 										<img
 											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
-										<p style="text-align: center; height: 0;">${dto.subject}</p>
-										<p style="text-align: center; height: 0;">${dto.team}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.subject}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.team}</p>
 									</div>
 								</c:if>
 							</c:forEach>
@@ -162,7 +164,7 @@
 
 						<table class="table">
 							<tr>
-								<td align="left">쉬페르리그</td>
+								<td align="left" style="font-weight: bold;">쉬페르리그</td>
 
 							</tr>
 						</table>
@@ -174,8 +176,8 @@
 										onclick="location.href='${articleUrl}&num=${dto.num}';">
 										<img
 											src="${pageContext.request.contextPath}/uploads/player/${dto.imageFilename}">
-										<p style="text-align: center; height: 0;">${dto.subject}</p>
-										<p style="text-align: center; height: 0;">${dto.team}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.subject}</p>
+										<p style="text-align: center; height: 0; font-weight: bold;">${dto.team}</p>
 									</div>
 								</c:if>
 							</c:forEach>
