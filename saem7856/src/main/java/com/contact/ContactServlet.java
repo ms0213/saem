@@ -38,11 +38,13 @@ public class ContactServlet extends MyServlet {
 			writeSubmit(req, resp);
 		} else if(uri.indexOf("article.do")!=-1) {
 			article(req, resp);
-		} else if(uri.indexOf("read_ok.do")!=-1) {
+		} /*else if(uri.indexOf("read_ok.do")!=-1) {
 			// 게시글 확인 여부
 			readOk(req, resp);
-		} else if(uri.indexOf("delete.do")!=-1) {
+		} */else if(uri.indexOf("delete.do")!=-1) {
 			delete(req, resp);			
+		} else if(uri.indexOf("updateChecked.do")!=-1) {
+			updateChecked(req,resp);
 		}
 	}
 	
@@ -106,10 +108,6 @@ public class ContactServlet extends MyServlet {
 				dto.setListNum(listNum);
 				n++;
 			}
-			
-			// 공감 유무
-			//int num = Integer.parseInt(req.getParameter("num"));
-			//boolean isChecked = dao.isChecked(num);
 			
 			String query = "";
 			if(keyword.length()!=0) {
@@ -210,7 +208,8 @@ public class ContactServlet extends MyServlet {
 		resp.sendRedirect(cp+"/contact/list.do?"+query);
 	}
 
-	// AJAX:JSON
+	// 좋아요 AJAX:JSON
+	/*
 	private void readOk(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		ContactDAO dao = new ContactDAO();
 		
@@ -238,7 +237,7 @@ public class ContactServlet extends MyServlet {
 		PrintWriter out = resp.getWriter();
 		out.print(job.toString());
 	}
-	
+	*/
 	protected void delete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		ContactDAO dao = new ContactDAO();
 		
@@ -262,6 +261,28 @@ public class ContactServlet extends MyServlet {
 		}
 		
 		resp.sendRedirect(cp+"/contact/list.do?"+query);
+	}
+	
+	protected void updateChecked(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		ContactDAO dao = new ContactDAO();
+		
+		String cp = req.getContextPath();
+
+		
+		String page = req.getParameter("page");
+	
+		try {
+			ContactDTO dto = new ContactDTO();
+			
+			dto.setNum(Integer.parseInt(req.getParameter("num")));
+			dto.setChecked(req.getParameter("checked"));
+			
+			dao.updateChecked(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		resp.sendRedirect(cp+"/contact/list.do?page="+page);
 	}
 
 }

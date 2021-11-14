@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import oracle.jdbc.proxy.annotation.Pre;
 import saem.util.DBConn;
 
 public class ContactDAO {
@@ -97,10 +96,14 @@ public class ContactDAO {
 				sql +=" WHERE INSTR(member, ? ) >=1";
 			} else if(condition.equals("league")) {
 				sql+=" WHERE INSTR(league,?) >=1";
-			}
+			} /*else if(condition.equals("checked")) {
+				sql+=" 		 WHERE checked = 'n' ";
+			}*/
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setString(1, keyword);
+			if(! condition.equals("checked")) {
+				pstmt.setString(1, keyword);
+			}
 
 			rs = pstmt.executeQuery();
 			if(rs.next()) result = rs.getInt(1);
@@ -141,18 +144,20 @@ public class ContactDAO {
 				sb.append("			 WHERE INSTR(member, ?) >=1 ");
 			} else if (condition.equals("league")) {
 				sb.append("			 WHERE INSTR(league, ?) >=1");
-			}
+			} /*else if(condition.equals("checked")) {
+				sb.append(" 		 WHERE checked = 'n' ");
+			}*/
 			sb.append("				 ORDER BY num DESC ");
 			sb.append("				 ) tb WHERE ROWNUM <= ? ");
 			sb.append("			) WHERE rnum >= ? ");
 			
 			pstmt = conn.prepareStatement(sb.toString());
 			
-			pstmt.setString(1, keyword);
-			pstmt.setInt(2, end);
-			pstmt.setInt(3, start);
-			
-			rs = pstmt.executeQuery();
+				pstmt.setString(1, keyword);
+				pstmt.setInt(2, end);
+				pstmt.setInt(3, start);
+
+				rs = pstmt.executeQuery();
 			
 			while(rs.next()) {
 				ContactDTO dto = new ContactDTO();
@@ -165,6 +170,7 @@ public class ContactDAO {
 				dto.setEmail(rs.getString("email"));
 				dto.setComment(rs.getString("comments"));
 				dto.setReg_date(rs.getString("reg_date"));
+				//dto.setChecked(rs.getString("checked"));
 				dto.setFullname(rs.getString("firstName"), rs.getString("lastName"));
 
 				list.add(dto);
@@ -199,7 +205,7 @@ public class ContactDAO {
 			sb.append("SELECT * FROM ( ");
 			sb.append("		SELECT ROWNUM rnum, tb.* ");
 			sb.append("		  FROM ( ");
-			sb.append("			SELECT num, firstName, lastName, league, member, email, comments, TO_CHAR(reg_date, 'YYYY-MM-DD') reg_date ");
+			sb.append("			SELECT num, firstName, lastName,league, chekced , member, email, comments, TO_CHAR(reg_date, 'YYYY-MM-DD') reg_date ");
 			sb.append("			  FROM contact ");
 			sb.append("		  ORDER BY num DESC ) tb ");
 			sb.append("		 WHERE ROWNUM <= ? )");
@@ -223,6 +229,7 @@ public class ContactDAO {
 				dto.setEmail(rs.getString("email"));
 				dto.setComment(rs.getString("comments"));
 				dto.setReg_date(rs.getString("reg_date"));
+				dto.setChecked(rs.getString("chekced"));
 				dto.setFullname(rs.getString("firstName"), rs.getString("lastName"));
 				
 				list.add(dto);
@@ -300,61 +307,6 @@ public class ContactDAO {
 		return dto;
 	}
 	
-	// 게시물 공감 추가
-	public int insertContactCheck(int num) throws SQLException{
-		int result = 0;
-		PreparedStatement pstmt = null;
-		String sql;
-		
-		try {
-			sql = "INSERT INTO contactCheck(num) VALUES (?)";
-			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setInt(1, num);
-			
-			result = pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (SQLException e) {
-				}
-			}
-		}
-		return result;
-	}
-	
-	// 게시글 공감 삭제
-	public int deleteContactCheck(int num) throws SQLException{
-		int result = 0;
-		PreparedStatement pstmt = null;
-		String sql;
-		
-		try {
-			sql = "DELETE FROM contactCheck WHERE num=?";
-			
-			pstmt = conn.prepareStatement(sql);
-			
-			pstmt.setInt(1, num);
-			
-			result = pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			if(pstmt != null) {
-				try {
-					pstmt.close();
-				} catch (Exception e2) {
-				}
-			}
-		}
-		return result;
-	}
-	
 	public int deleteContact(int num) throws SQLException{
 		int result = 0;
 		PreparedStatement pstmt = null;
@@ -383,43 +335,34 @@ public class ContactDAO {
 		
 	}
 	
-	// 공감 유무
-	public boolean isChecked(int num) {
-		boolean result= false;
+	public int updateChecked(ContactDTO dto) throws SQLException{
+		int result = 0;
 		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		String sql;
 		
 		try {
-			sql = "SELECT num FROM contactCheck WHERE num=?";
+			sql = "UPDATE contact SET chekced = ? WHERE num = ?";
+			
 			pstmt = conn.prepareStatement(sql);
 			
-			pstmt.setInt(1, num);
+			pstmt.setString(1, dto.getChecked());
+			pstmt.setInt(2, dto.getNum());
 			
-			rs= pstmt.executeQuery();
+			result = pstmt.executeUpdate();
 			
-			if(rs.next()) {
-				result = true;
-			}
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
+			throw e;
 		} finally {
-			if(rs != null) {
-				try {
-					rs.close();
-				} catch (Exception e2) {
-				}
-			}
-			
-			if(pstmt != null) {
+			if (pstmt != null) {
 				try {
 					pstmt.close();
-				} catch (Exception e2) {
+				} catch (SQLException e) {
 				}
 			}
-			
 		}
 		
 		return result;
 	}
+	
 }

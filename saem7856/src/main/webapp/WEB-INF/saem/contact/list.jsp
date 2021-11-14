@@ -45,13 +45,11 @@ function searchList() {
 	f.submit();
 }
 
-$(function(){
-	$(".checked").click(function(){
-		var $i = $(this).find("i");
-		var isLike = $i.props == "far";
-		alert(isLike);
-	});
-});
+function checked(num, chk) {
+	var url = "${pageContext.request.contextPath}/contact/updateChecked.do";
+	var query = "num="+num+"&checked="+chk+"&page=${page}";
+	location.href=url+"?"+query;
+}
 </script>
 
 <style type="text/css">
@@ -135,11 +133,11 @@ i:hover{
 								<td>${dto.reg_date}</td>
 								<td>
 									<c:choose>
-										<c:when test="${ isChecked == true}">
-											<i class="far fa-check-circle fa-lg" onclick = "checked();"></i>										
+										<c:when test="${ dto.checked=='n'}">
+											<i class="far fa-check-circle fa-lg" onclick = "checked('${dto.num}', 'y');"></i>										
 										</c:when>
 										<c:otherwise>
-											<i class="fas fa-check-circle fa-lg" onclick = "checked();"></i>																				
+											<i class="fas fa-check-circle fa-lg" onclick = "checked('${dto.num}', 'n');"></i>																				
 										</c:otherwise>
 									</c:choose>
 								</td>

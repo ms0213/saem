@@ -11,11 +11,16 @@ public class ContactDTO {
 	private String email;
 	private String league;
 	private String member;
+	private String checked;
 	private int num;
 	private int listNum;
-	private int checkContact;
 	
-	
+	public String getChecked() {
+		return checked;
+	}
+	public void setChecked(String checked) {
+		this.checked = checked;
+	}
 	public int getListNum() {
 		return listNum;
 	}
@@ -46,12 +51,7 @@ public class ContactDTO {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public int getCheckContact() {
-		return checkContact;
-	}
-	public void setCheckContact(int checkContact) {
-		this.checkContact = checkContact;
-	}
+
 	public String getUserId() {
 		return userId;
 	}
