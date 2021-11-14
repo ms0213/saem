@@ -6,11 +6,11 @@
 	<div class="inner">
 
 		<!-- Search -->
-		<h3>saem7856 withsoccer</h3>
+		<h3 style="padding-bottom:20px; margin-bottom: 20px">saem7856 withsoccer</h3>
 
 		<!-- Menu -->
 		<nav id="menu">
-			<header class="major">
+			<header class="major" style="margin-top:40px">
 				<h2>Menu</h2>
 			</header>
 			<ul>
