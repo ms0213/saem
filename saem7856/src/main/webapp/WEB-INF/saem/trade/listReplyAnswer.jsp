@@ -8,7 +8,7 @@
 		<div class='answer-article-header'>
 			<div class='answer-left'>└</div>
 			<div class='answer-right'>
-				<div style='float: left;'><span class='bold'>${vo.userName}</span></div>
+				<div style='float: left;'><span class='bold' style="font-weight:bold">${vo.userName} </span></div>
 				<div style='float: right;'>
 					<span>${vo.reg_date}</span> |
 					<c:choose>
@@ -24,7 +24,7 @@
 			</div>
 		</div>
 		<div class='answer-article-body'>
-			${vo.content}
+			&nbsp; ${vo.content}
 		</div>
 	</div>
 </c:forEach>

@@ -32,7 +32,7 @@
 				<li><span class="opener">Contact</span>
 					<ul>
 						<li><a href="${pageContext.request.contextPath}/announce/list.do">공지사항</a></li>
-						<li><a href="#">contact us</a></li>
+						<li><a href="${pageContext.request.contextPath}/contact/write.do">contact us</a></li>
 					</ul></li>
 				<c:if test="${sessionScope.member.userId=='admin'}">	
 				<li><span class="opener">Admin</span>

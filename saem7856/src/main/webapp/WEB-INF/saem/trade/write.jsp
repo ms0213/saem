@@ -28,7 +28,6 @@ function sendOk() {
         return;
     }
 
-
     if($(':radio[name="tradeType"]:checked').length < 1){
 		$("#구매").focus();
     	//$(":radio[id='구매']").prop("checked", true);
@@ -94,7 +93,7 @@ textarea{
 						<tr>
 							<td>금액</td>
 							<td>
-								<input type="text" name="pay" class="boxTF" value="${dto.pay}" style="width:20%; display:inline"><span>&nbsp;&nbsp;원</span>
+								<input type="text" name="pay" class="boxTF" value="${dto.pay}" required="required" style="width:20%; display:inline"><span>&nbsp;&nbsp;원</span>
 							</td>
 						</tr>
 						<tr>

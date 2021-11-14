@@ -66,13 +66,13 @@ li{
 							<ul style="float: left; width: 400px;">
 								<li class="col-title">First Name</li>
 								<li class="col-input" >
-									<input type="text" style="width: 90%;" name="firstName" id="firstName" placeholder="First Name" style="width: 40%;">
+									<input type="text" style="width: 90%;" name="firstName" id="firstName" required="required" placeholder="First Name" style="width: 40%;">
 								</li>
 							</ul>
 							<ul style="float: left; width: 400px;">
 								<li class="col-title">Last Name</li>
 								<li class="col-input">
-									<input type="text" style="width: 90%;" name="lastName" id="lastName" placeholder="Last Name"style="width:40%;">
+									<input type="text" style="width: 90%;" name="lastName" id="lastName" required="required" placeholder="Last Name"style="width:40%;">
 								</li>
 							</ul>
 						</div>
