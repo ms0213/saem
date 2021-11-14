@@ -212,7 +212,7 @@ function userIdCheck() {
 
 				<section>
 					<div class="title-body">
-						<span class="article-title">${title}</span>
+						<h1> ${title}</h1>
 					</div>
 					
 						<div class="body-container">
