@@ -35,7 +35,6 @@ req.setCharacterEncoding("utf-8");
 		
 		String uri = req.getRequestURI();
 		String cp = req.getContextPath();
-		
 		HttpSession session = req.getSession();
 		SessionInfo info = (SessionInfo) session.getAttribute("member");
 		
