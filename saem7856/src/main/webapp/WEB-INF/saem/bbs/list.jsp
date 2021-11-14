@@ -44,7 +44,7 @@
 					<div class="body-container" style="padding-top: 30px;">
 						<div class="title" style="margin: 30px 0 30px 0">
 							<h1>
-								<i class="fas fa-chalkboard"></i> 자유 게시판
+								<i></i> 자유 게시판
 							</h1>
 						</div>
 						<table class="table">
@@ -67,7 +67,7 @@
 												${condition=="content"?"selected='selected'":"" }>내용</option>
 										</select> <input type="text" name="keyword" value="${keyword}"
 											class="boxTF" style="width: 300px;">
-										<button type="button" onclick="searchList();">검색</button>
+										<button type="button" class="btn" onclick="searchList();">검색</button>
 									</form>
 								</td>
 
@@ -115,18 +115,18 @@
 						</table>
 						
 						<div style='padding: 10px 13px 10px 10px; float: left;'>
-							<button type="button"
+							<button type="button" class="btn"
 								onclick="location.href='${pageContext.request.contextPath}/bbs/list.do';">새로고침</button>
 						</div>
 						<div style='padding: 0px 13px 10px 10px; float: right;'>
 							<c:choose>
 								<c:when test="${sessionScope.member.userId=='admin'}">
-									<button type="button"
+									<button type="button" class="btn"
 										onclick="location.href='${pageContext.request.contextPath}/bbs/notice.do';">글올리기</button>
 								</c:when>
 								<c:otherwise>
 
-									<button type="button"
+									<button type="button" class="btn"
 										onclick="location.href='${pageContext.request.contextPath}/bbs/write.do';">글올리기</button>
 
 								</c:otherwise>
