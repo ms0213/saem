@@ -10,7 +10,7 @@
 
 		<!-- Menu -->
 		<nav id="menu">
-			<header class="major" style="margin-top:40px">
+			<header class="major" style="margin-top:0; padding-top:10px">
 				<h2>Menu</h2>
 			</header>
 			<ul>
