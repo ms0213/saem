@@ -336,7 +336,7 @@ function isValidTime(data) {
 function deleteOk(num) {
 	if(confirm("일정을 삭제 하시 겠습니까 ? ")) {
 		var date = "${date}";
-		var url = "${pageContext.request.contextPath}/schedule/delete.do?date="+date+"&num="+num;
+		var url = "${pageContext.request.contextPath}/fixture/delete.do?date="+date+"&num="+num;
 		location.href = url;
 	}
 }
@@ -359,7 +359,7 @@ function deleteOk(num) {
 				<main>
 	<div class="body-container" style="width: 900px;">
 		<div class="body-title">
-			<h3><i class="far fa-calendar-alt"></i> 일정관리 </h3>
+			<h1>일정관리 </h1>
 		</div>
         
 		<div>
@@ -477,10 +477,12 @@ function deleteOk(num) {
 									</td>
 								</tr>
 								<tr height="45">
+									<c:if test="${sessionScope.member.userId == 'admin'}">
 									<td colspan="2" align="right" style="padding-right: 5px;">
 										<button type="button" id="btnUpdate" class="btn" >수정</button>
 										<button type="button" id="btnDelete" class="btn" onclick="deleteOk('${dto.num}');">삭제</button>
 									</td>
+									</c:if>
 								</tr>
 							</table>
 						</c:if>

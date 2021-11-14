@@ -383,7 +383,7 @@ $(function(){
 				<main>
 	<div class="body-container" style="width: 900px;">
 		<div class="body-title">
-			<h3><i class="far fa-calendar-alt"></i> 일정관리 </h3>
+			<h1>일정관리 </h1>
 		</div>
         
 		<div>
@@ -434,6 +434,7 @@ $(function(){
 		</div>
 	</div>
 
+	<c:if test="${sessionScope.member.userId == 'admin'}">
 	<div id="schedule-dialog" style="display: none;">
 		<form name="scheduleForm">
 			<table style="width: 100%; margin: 20px auto 0; border-spacing: 0; border-collapse: collapse;">
@@ -514,7 +515,7 @@ $(function(){
 			</table>
 		</form>
 	</div>
-
+	</c:if>
 </main>
 
 			</div>

@@ -162,7 +162,7 @@ $(function(){
 				<main>
 	<div class="body-container" style="width: 900px;">
 		<div class="body-title">
-			<h3><i class="far fa-calendar-alt"></i> 일정관리 </h3>
+			<h1>일정관리 </h1>
 		</div>
         
 		<div>

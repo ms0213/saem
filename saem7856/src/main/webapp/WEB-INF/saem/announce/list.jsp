@@ -106,9 +106,9 @@ td a {
 				</header>
 				<div class="body-container">
 					<div class="body-title" style="margin: 30px 0 30px 0">
-						<h3>
-							<i class="fas fa-clipboard-list"></i> 공지사항
-						</h3>
+						<h1>
+							공지사항
+						</h1>
 					</div>
 
 					<form method="post" name="listForm" class="search_wrapper"
@@ -170,7 +170,7 @@ td a {
 						<c:forEach var="dto" items="${list}">
 							<tr>
 								<td>${dto.listNum}</td>
-								<td class="left"><a href="${articleUrl}&num=${dto.anum}">${dto.subject}</a>
+								<td class="left" style="font-weight: bold;"><a href="${articleUrl}&num=${dto.anum}">${dto.subject}</a>
 								<td><span>관리자</span></td>
 								<td>${dto.reg_date}</td>
 								<td>${dto.hitCount}</td>
