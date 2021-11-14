@@ -48,6 +48,7 @@
 	width: 570px;
 	height: 450px;
 }
+
 </style>
 <script type="text/javascript">
 	function deletePhoto() {
@@ -125,7 +126,8 @@
 							</tr>
 
 							<tr>
-								<td colspan="2" style="background-color: white;"><c:choose>
+								<td colspan="2" style="background-color: white;">
+									<c:choose>
 										<c:when test="${listFile.size() > 1}">
 											<ul class="slider">
 												<c:forEach var="dto" items="${listFile}">

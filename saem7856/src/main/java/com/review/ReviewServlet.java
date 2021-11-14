@@ -130,7 +130,7 @@ req.setCharacterEncoding("utf-8");
 
 			int start = (current_page - 1) * rows + 1;
 			int end = current_page * rows;
-			int gdsNum = Integer.parseInt(req.getParameter("gdsNum"));
+			int gdsNum = Integer.parseInt(req.getParameter("gdsnum"));
 			
 			// 게시물 가져오기
 			List<ReviewDTO> list = null;
@@ -435,7 +435,7 @@ req.setCharacterEncoding("utf-8");
 		String cp = req.getContextPath();
 		
 		String page = req.getParameter("page");
-		String query = "page=" + page;
+		String query = "&page=" + page;
 
 		try {
 			int num = Integer.parseInt(req.getParameter("num"));
@@ -456,7 +456,7 @@ req.setCharacterEncoding("utf-8");
 			e.printStackTrace();
 		}
 
-		resp.sendRedirect(cp + "/review/list.do?" + query);
+		resp.sendRedirect(cp + "/review/list.do?gdsnum="+ req.getParameter("gdsnum") + query);
 	}
 	
 	// AJAX - JSON

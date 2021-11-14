@@ -164,7 +164,11 @@
 <script type="text/javascript">
 	function deletePhoto() {
 		if (confirm("게시글을 삭제하시겠습니까?")) {
-			var query = "num=${dto.num}&page=${page}";
+			var search = location.search
+			var params = new URLSearchParams(search);
+			var getGdsNum = params.get('gdsnum');
+			$('input[name=gdsNum]').attr('value', getGdsNum);
+			var query = "gdsnum=${dto.gdsNum}&num=${dto.num}&page=${page}";
 			var url = "${pageContext.request.contextPath}/review/delete.do?"
 					+ query;
 			location.href = url;

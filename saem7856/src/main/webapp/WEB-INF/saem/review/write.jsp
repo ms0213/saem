@@ -81,7 +81,7 @@
 		}
 		var search = location.search
 		var params = new URLSearchParams(search);
-		var getGdsNum = params.get('num');
+		var getGdsNum = params.get('gdsnum');
 		$('input[name=gdsNum]').attr('value', getGdsNum);
 
 		f.action = "${pageContext.request.contextPath}/review/${mode}_ok.do";
