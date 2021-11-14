@@ -82,13 +82,13 @@
 	
 	function sendList() {
 		var f = document.sendForm;
-		f.action = "${pageContext.request.contextPath}/review/list.do?num=${dto.num}&page=${page}";
+		f.action = "${pageContext.request.contextPath}/review/list.do?gdsnum=${dto.num}&page=${page}";
 		f.submit();
 	}
 	
 	function sendWrite() {
 		var f = document.sendForm;
-		f.action = "${pageContext.request.contextPath}/review/write.do?num=${dto.num}";
+		f.action = "${pageContext.request.contextPath}/review/write.do?gdsnum=${dto.num}";
 		f.submit();
 	}
 	
