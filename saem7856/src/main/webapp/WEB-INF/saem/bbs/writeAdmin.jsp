@@ -69,11 +69,11 @@
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 				<main>
-					<div class="body-container">
-						<div class="body-title" style="padding-top: 50px;">
-							<h3 style="font-size: 2.25em; font-weight: bold;">
-								<i class="fas fa-chalkboard"></i> 자유 게시판
-							</h3>
+				<div class="body-container" style="padding-top: 30px;">
+		<div class="title" style="margin: 30px 0 30px 0">
+							<h1>
+								<i></i> 자유 게시판
+							</h1>
 						</div>
 
 						<form name="boardForm" method="post">

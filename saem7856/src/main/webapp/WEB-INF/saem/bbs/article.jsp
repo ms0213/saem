@@ -527,10 +527,12 @@ $(function(){
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 				<main>
-	<div class="body-container">
-		<div class="body-title">
-			<h3><i class="fas fa-chalkboard"></i> 게시판 </h3>
-		</div>
+	<div class="body-container" style="padding-top: 30px;">
+		<div class="title" style="margin: 30px 0 30px 0">
+							<h1>
+								<i></i> 자유 게시판
+							</h1>
+						</div>
         
 		<table class="table table-border table-article">
 			<tr>
