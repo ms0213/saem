@@ -250,7 +250,7 @@ public class ArticleServlet extends MyUploadServlet{
 			
 			
 			// 로그인 유저 좋아요 유무
-			boolean isUserLike = false;
+			boolean isUserLike = dao.isUserArticleLike(num, info.getUserId());
 			if( info != null) {
 				dao.isUserArticleLike(num, info.getUserId());
 			}

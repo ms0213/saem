@@ -61,9 +61,8 @@ function sendOk() {
 				<header id="header">
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
-				<section>
-					<div class = "title-body">
-						<span class="article-title"> NEWS </span>
+					<div class = "title-body" style="margin:30px 0 30px 0">
+						<h1>NEWS </h1>
 					</div>
 					
 					<form name="articleForm" method="post" enctype="multipart/form-data">
@@ -130,8 +129,6 @@ function sendOk() {
 					</form>
 						
 						
-						
-				</section>
 			</div>
 		</div>
 		<div id="sidebar">

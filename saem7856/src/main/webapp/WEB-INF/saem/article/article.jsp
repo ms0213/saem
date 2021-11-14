@@ -69,7 +69,7 @@ $(function(){
 	$(".btnSendArticleLike").click(function(){
 		var uid = "${empty sessionScope.member?'false':'true'}";
 		if(uid=="false") {
-			alert("로그인해라");
+			alert("로그인 하셔야합니다.");
 			return false;
 		}
 		
@@ -124,8 +124,8 @@ $(function(){
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
 				
-					<div class = "title-body">
-						<span class="article-title"> NEWS </span>
+					<div class = "title-body" style="margin:30px 0 30px 0">
+						<h1>NEWS</h1>
 					</div>
 					
 					<table class="table table-border table-article">
@@ -162,7 +162,7 @@ $(function(){
 						<tr>
 							<td colspan="2">
 								링&nbsp;&nbsp;&nbsp;크&nbsp;&nbsp;: 
-								<a href="${dto.link}">${dto.link}</a>
+								<a href="${dto.link}" target="_blank">${dto.link}</a>
 							</td>
 						</tr>
 						<tr>
