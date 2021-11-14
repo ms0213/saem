@@ -11,17 +11,24 @@
 	content="width=device-width, initial-scale=1, user-scalable=no" />
 <jsp:include page="/WEB-INF/saem/layout/staticHeader.jsp" />
 <style type="text/css">
-.table-article tr > td {
-	padding-left: 5px; padding-right: 5px; vertical-align: top;
+.table-article tr>td {
+	padding-left: 5px;
+	padding-right: 5px;
+	vertical-align: top;
 }
-.table-article tr > td div {
+
+.table-article tr>td div {
 	height: 100% !important;
 }
+
 .table-article .img {
-	max-width:100%; height:auto; resize:both;
+	max-width: 100%;
+	height: auto;
+	resize: both;
 }
 </style>
-<script type="text/javascript" src="${pageContext.request.contextPath}/assets/ckeditor5/ckeditor.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/assets/ckeditor5/ckeditor.js"></script>
 
 <script type="text/javascript">
 <c:if test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
@@ -47,77 +54,74 @@
 				<header id="header">
 					<jsp:include page="/WEB-INF/saem/layout/header.jsp"></jsp:include>
 				</header>
-<main>
-	<div class="body-container">
-		<div class="body-title" style="padding-top: 50px;">
-			<h3 style="font-size: 2.25em; font-weight: bold;"><i class="fas fa-futbol"></i> 선수 정보 </h3>
-		</div>
-        
-		<table class="table table-border table-article">
-			<colgroup>
-				<col width="30%" />
-				<col width="70%" />
-			</colgroup>
-		
-			<tr>
-				<td colspan="2" align="center">
-					${dto.subject}
-				</td>
-			</tr>
-			
+				<main>
+					<div class="body-container">
+						<div class="body-title" style="padding-top: 50px;">
+							<h1>
+								<i class="fas fa-futbol"></i> 선수 정보
+							</h1>
+						</div>
 
-			<tr>
-				<td style="padding-top: 0;">
-					<div class="editor">${dto.content}</div>
-				</td>
-			
-				<td style="padding-top: 0;">
-					<div class="editor2">${dto.content2}</div>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" align="center">
-					리그 순위표
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2" style="padding-top: 0;">
-					<div class="editor3">${dto.content3}</div>
-				</td>
-			</tr>
-		</table>
-		
-		<table class="table">
-			<tr>
-				<td width="50%">
-					<c:choose>
-						<c:when test="${sessionScope.member.userId==dto.userId}">
-							<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/player/update.do?num=${dto.num}&page=${page}';">수정</button>
-						</c:when>
-						<c:otherwise>
-							<button type="button" class="btn" disabled="disabled">수정</button>
-						</c:otherwise>
-					</c:choose>
-			    	
-					<c:choose>
-			    		<c:when test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
-			    			<button type="button" class="btn" onclick="deletePhoto();">삭제</button>
-			    		</c:when>
-			    		<c:otherwise>
-			    			<button type="button" class="btn" disabled="disabled">삭제</button>
-			    		</c:otherwise>
-			    	</c:choose>
-				</td>
-				<td align="right">
-					<button type="button" class="btn" onclick="location.href='${pageContext.request.contextPath}/player/list.do?page=${page}';">선수목록</button>
-				</td>
-			</tr>
-		</table>
-        
-	</div>
-</main>
+						<table class="table table-border table-article">
+							<colgroup>
+								<col width="30%" />
+								<col width="70%" />
+							</colgroup>
 
-<script type="text/javascript">
+							<tr>
+								<td colspan="2" align="center" >${dto.subject}</td>
+							</tr>
+
+
+							<tr>
+								<td style="padding-top: 0;">
+									<div class="editor">${dto.content}</div>
+								</td>
+
+								<td style="padding-top: 0;">
+									<div class="editor2">${dto.content2}</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2" align="center">리그 순위표</td>
+							</tr>
+							<tr>
+								<td colspan="2" style="padding-top: 0;">
+									<div class="editor3">${dto.content3}</div>
+								</td>
+							</tr>
+						</table>
+
+						<table class="table">
+							<tr>
+								<td width="50%"><c:choose>
+										<c:when test="${sessionScope.member.userId==dto.userId}">
+											<button type="button" class="btn"
+												onclick="location.href='${pageContext.request.contextPath}/player/update.do?num=${dto.num}&page=${page}';">수정</button>
+										</c:when>
+										<c:otherwise>
+											<button type="button" class="btn" disabled="disabled">수정</button>
+										</c:otherwise>
+									</c:choose> <c:choose>
+										<c:when
+											test="${sessionScope.member.userId==dto.userId || sessionScope.member.userId=='admin'}">
+											<button type="button" class="btn" onclick="deletePhoto();">삭제</button>
+										</c:when>
+										<c:otherwise>
+											<button type="button" class="btn" disabled="disabled">삭제</button>
+										</c:otherwise>
+									</c:choose></td>
+								<td align="right">
+									<button type="button" class="btn"
+										onclick="location.href='${pageContext.request.contextPath}/player/list.do?page=${page}';">선수목록</button>
+								</td>
+							</tr>
+						</table>
+
+					</div>
+				</main>
+
+				<script type="text/javascript">
 ClassicEditor
 	.create( document.querySelector( '.editor' ), {
 	})
@@ -144,7 +148,7 @@ ClassicEditor
 		editor.isReadOnly = true;
 		editor.ui.view.top.remove( editor.ui.view.stickyPanel );
 	} );
-</script> 
+</script>
 			</div>
 		</div>
 		<div id="sidebar">
