@@ -351,6 +351,7 @@ function userIdCheck() {
 									    <button type="reset" class="btn"> 다시입력 </button>
 									    <button type="button" class="btn" 
 									    	onclick="javascript:location.href='${pageContext.request.contextPath}/';"> ${mode=="signup"?"가입취소":"수정취소"} </button>
+									    <input type="hidden" name="userIdValid" id="userIdValid" value="false">
 									</td>
 								</tr>
 								

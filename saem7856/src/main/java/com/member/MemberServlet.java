@@ -166,7 +166,7 @@ public class MemberServlet extends MyServlet {
 		}
 
 		req.setAttribute("title", "회원 가입");
-		req.setAttribute("mode", "member");
+		req.setAttribute("mode", "signup");
 		req.setAttribute("message", message);
 		forward(req, resp, "/WEB-INF/saem/member/signup.jsp");
 	}
